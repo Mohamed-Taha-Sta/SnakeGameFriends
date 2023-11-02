@@ -12,16 +12,19 @@ import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener{
 
+	private int[] obstacleX = new int[GAME_UNITS];
+	private int[] obstacleY = new int[GAME_UNITS];
+	private int numObstacles = 10;
 
 	static final int SCREEN_WIDTH = 1300;
 
 	static final int SCREEN_HEIGHT = 750;
 
-	static final int UNIT_SIZE = 50;
+	static final int UNIT_SIZE = 20;
 
 	static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/(UNIT_SIZE*UNIT_SIZE);
 
-	static final int DELAY = 175;
+	static final int DELAY = 100;
 
 	final int x[] = new int[GAME_UNITS];
 
@@ -65,6 +68,10 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		newApple();
 
+		for (int i = 0; i < numObstacles; i++) {
+			placeObstacle();
+		}
+
 		running = true;
 
 		timer = new Timer(DELAY,this);
@@ -76,30 +83,36 @@ public class GamePanel extends JPanel implements ActionListener{
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
-
+		setBackground(new Color(46,48,48));
 		draw(g);
+
+		g.setColor(Color.WHITE); // Set obstacle color
+		for (int i = 0; i < numObstacles; i++) {
+			g.fillRect(obstacleX[i], obstacleY[i], UNIT_SIZE, UNIT_SIZE);
+		}
 
 	}
 
 	public void draw(Graphics g) {
 
-		
+		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
 
 		if(running) {
 
-			/*
 
-			for(int i=0;i<SCREEN_HEIGHT/UNIT_SIZE;i++) {
 
-				g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
+//			for(int i=0;i<SCREEN_HEIGHT/UNIT_SIZE;i++) {
+//
+//				g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
+//
+//				g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
+//
+//			}
 
-				g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
 
-			}
 
-			*/
-
-			g.setColor(Color.red);
+			g.setColor(new Color(217,84,60));
 
 			g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
@@ -109,7 +122,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
 				if(i == 0) {
 
-					g.setColor(Color.green);
+					g.setColor(new Color(98, 190, 155));
 
 					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 
@@ -117,7 +130,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
 				else {
 
-					g.setColor(new Color(45,180,0));
+					g.setColor(new Color(59, 146, 116));
 
 					//g.setColor(new Color(random.nextInt(255),random.nextInt(255),random.nextInt(255)));
 
@@ -127,9 +140,9 @@ public class GamePanel extends JPanel implements ActionListener{
 
 			}
 
-			g.setColor(Color.red);
+			g.setColor(Color.white);
 
-			g.setFont( new Font("Ink Free",Font.BOLD, 40));
+			g.setFont( new Font("Roboto",Font.PLAIN, 40));
 
 			FontMetrics metrics = getFontMetrics(g.getFont());
 
@@ -273,9 +286,9 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		//Score
 
-		g.setColor(Color.red);
+		g.setColor(Color.WHITE);
 
-		g.setFont( new Font("Ink Free",Font.BOLD, 40));
+		g.setFont( new Font("Roboto",Font.PLAIN, 40));
 
 		FontMetrics metrics1 = getFontMetrics(g.getFont());
 
@@ -283,9 +296,9 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		//Game Over text
 
-		g.setColor(Color.red);
+		g.setColor(Color.WHITE);
 
-		g.setFont( new Font("Ink Free",Font.BOLD, 75));
+		g.setFont( new Font("Roboto",Font.PLAIN, 75));
 
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
 
@@ -367,6 +380,13 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		}
 
+	}
+
+	public void placeObstacle() {
+		for (int i = 0; i < numObstacles; i++) {
+			obstacleX[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
+			obstacleY[i] = random.nextInt((int) (SCREEN_HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
+		}
 	}
 
 }

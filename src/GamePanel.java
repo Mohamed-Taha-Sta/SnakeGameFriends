@@ -19,7 +19,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	private int numObstacles = 8;
 	static final int SCREEN_WIDTH = 1300;
 
-	static final int SCREEN_HEIGHT = 750;
+	static final int SCREEN_HEIGHT = 740;
 
 	static final int UNIT_SIZE = 20;
 
@@ -136,28 +136,21 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		if(running) {
 
-//			for(int i=0;i<SCREEN_HEIGHT/UNIT_SIZE;i++) {
-//
-//				g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
-//
-//				g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
-//
-//			}
-
 			g.setColor(new Color(217,84,60));
-
 			g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
+			Color startColor = new Color(98, 190, 155);
+			Color endColor = new Color(59, 146, 116);
 
-
+			// Calculate color interpolation for the gradient
 			for (int i = 0; i < bodyParts; i++) {
-				if (i == 0) {
-					g.setColor(new Color(98, 190, 155)); // Set a different color for the head
-				} else if (i % 2 == 0) {
-					g.setColor(new Color(98, 190, 155)); // Use one color for even body parts
-				} else {
-					g.setColor(new Color(59, 146, 116)); // Use another color for odd body parts
-				}
+				double ratio = (double) i / (double) (bodyParts - 1);
+				int red = (int) (startColor.getRed() + ratio * (endColor.getRed() - startColor.getRed()));
+				int green = (int) (startColor.getGreen() + ratio * (endColor.getGreen() - startColor.getGreen()));
+				int blue = (int) (startColor.getBlue() + ratio * (endColor.getBlue() - startColor.getBlue()));
+				Color gradientColor = new Color(red, green, blue);
+
+				g.setColor(gradientColor);
 				g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 			}
 
@@ -181,7 +174,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		do {
 			appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
 			appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
-		} while (appleInObstacle());
+		} while (appleInObstacle() || !appleOutside());
 	}
 
 	public boolean appleInObstacle() {
@@ -195,7 +188,14 @@ public class GamePanel extends JPanel implements ActionListener{
 		return false;
 	}
 
+	public boolean appleOutside() {
+		return appleX >= 0 && appleX < SCREEN_WIDTH && appleY >= 0 && appleY < SCREEN_HEIGHT;
+	}
+
 	public void move(){
+
+		int prevX = x[0];
+		int prevY = y[0];
 
 		for(int i = bodyParts;i>0;i--) {
 
@@ -204,8 +204,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			y[i] = y[i-1];
 
 		}
-
-		
 
 		switch(direction) {
 
@@ -233,6 +231,28 @@ public class GamePanel extends JPanel implements ActionListener{
 
 			break;
 
+		}
+
+		if (x[0] < 0) {
+			x[0] = SCREEN_WIDTH - UNIT_SIZE;
+		} else if (x[0] >= SCREEN_WIDTH) {
+			x[0] = 0;
+		}
+		if (y[0] < 0) {
+			y[0] = SCREEN_HEIGHT - UNIT_SIZE;
+		} else if (y[0] >= SCREEN_HEIGHT) {
+			y[0] = 0;
+		}
+
+		// Move the rest of the body parts
+		for (int i = 1; i < bodyParts; i++) {
+			// Swap positions with the previous body part
+			int tempX = x[i];
+			int tempY = y[i];
+			x[i] = prevX;
+			y[i] = prevY;
+			prevX = tempX;
+			prevY = tempY;
 		}
 
 		
@@ -278,36 +298,36 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 
 		//check if head touches left border
-
-		if(x[0] < 0) {
-
-			running = false;
-
-		}
-
-		//check if head touches right border
-
-		if(x[0] > SCREEN_WIDTH) {
-
-			running = false;
-
-		}
-
-		//check if head touches top border
-
-		if(y[0] < 0) {
-
-			running = false;
-
-		}
-
-		//check if head touches bottom border
-
-		if(y[0] > SCREEN_HEIGHT) {
-
-			running = false;
-
-		}
+//
+//		if(x[0] < 0) {
+//
+//			running = false;
+//
+//		}
+//
+//		//check if head touches right border
+//
+//		if(x[0] > SCREEN_WIDTH) {
+//
+//			running = false;
+//
+//		}
+//
+//		//check if head touches top border
+//
+//		if(y[0] < 0) {
+//
+//			running = false;
+//
+//		}
+//
+//		//check if head touches bottom border
+//
+//		if(y[0] > SCREEN_HEIGHT) {
+//
+//			running = false;
+//
+//		}
 
 
 
@@ -345,6 +365,12 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.setFont( new Font("Roboto",Font.PLAIN, 20));
 		FontMetrics metrics3 = getFontMetrics(g.getFont());
 		g.drawString("Press 'R' to Restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to Restart"))/2, SCREEN_HEIGHT/2+2*UNIT_SIZE);
+
+		//Escape Text
+
+		g.setFont( new Font("Roboto",Font.PLAIN, 20));
+		FontMetrics metrics4 = getFontMetrics(g.getFont());
+		g.drawString("Press 'ESC' to Quit", (SCREEN_WIDTH - metrics4.stringWidth("Press 'ESC' to Quit"))/2, SCREEN_HEIGHT/2+4*UNIT_SIZE);
 
 
 	}
@@ -414,11 +440,14 @@ public class GamePanel extends JPanel implements ActionListener{
 			case KeyEvent.VK_R:
 
 				if (!running) {
-					startGame(); // Restart the game when 'R' is pressed
+					startGame();
 				}
-
 				break;
 
+			case KeyEvent.VK_ESCAPE:
+
+				System.exit(0);
+				break;
 			}
 
 		}

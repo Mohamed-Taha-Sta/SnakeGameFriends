@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Initial commit">
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -79,7 +80,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698917240389</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES.">
+      <created>1698923459214</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1698923459214</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -104,6 +112,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
+    <MESSAGE value="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES." />
   </component>
 </project>

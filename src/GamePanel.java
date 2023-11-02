@@ -6,16 +6,21 @@ import java.awt.event.*;
 
 import javax.swing.*;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 
 
 public class GamePanel extends JPanel implements ActionListener{
 
-	private int[] obstacleX = new int[GAME_UNITS];
-	private int[] obstacleY = new int[GAME_UNITS];
-	private int numObstacles = 10;
+	final int x[] = new int[GAME_UNITS];
 
+	final int y[] = new int[GAME_UNITS];
+	private int[] obstacleXStart = new int[GAME_UNITS];
+	private int[] obstacleYStart = new int[GAME_UNITS];
+	private int[] obstacleXEnd = new int[GAME_UNITS];
+	private int[] obstacleYEnd = new int[GAME_UNITS];
+	private int numObstacles = 8;
 	static final int SCREEN_WIDTH = 1300;
 
 	static final int SCREEN_HEIGHT = 750;
@@ -26,21 +31,15 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	static final int DELAY = 100;
 
-	final int x[] = new int[GAME_UNITS];
-
-	final int y[] = new int[GAME_UNITS];
-
+	int level = 1;
 	int bodyParts = 6;
-
 	int applesEaten;
-
 	int appleX;
-
 	int appleY;
-
 	char direction = 'R';
-
 	boolean running = false;
+	boolean obstaclesPainted = false;
+	private java.util.List<Rectangle> obstacles = new ArrayList<>();
 
 	Timer timer;
 
@@ -86,11 +85,47 @@ public class GamePanel extends JPanel implements ActionListener{
 		setBackground(new Color(46,48,48));
 		draw(g);
 
-		g.setColor(Color.WHITE); // Set obstacle color
-		for (int i = 0; i < numObstacles; i++) {
-			g.fillRect(obstacleX[i], obstacleY[i], UNIT_SIZE, UNIT_SIZE);
+		for (Rectangle obstacle : obstacles) {
+			g.setColor(Color.WHITE);
+			g.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 		}
 
+//		paintObstacles(g);
+
+	}
+
+	public void paintObstacles(Graphics g){
+
+		g.setColor(Color.WHITE);
+
+
+
+		//Failed attempt at procedural generation:
+
+//		for (int i = 0; i < numObstacles; i++) {
+//			g.fillRect(obstacleX[i], obstacleY[i], UNIT_SIZE, UNIT_SIZE);
+//			int LENGTH_OF_OBSTACLE = random.nextInt(UNIT_SIZE*10)+UNIT_SIZE;
+//			int DIRECTION_OF_OBSCTACLE = random.nextInt(8);
+//			for (int j = 0; j < LENGTH_OF_OBSTACLE; j=j+UNIT_SIZE) {
+//				if (DIRECTION_OF_OBSCTACLE == 0){
+//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//				} else if (DIRECTION_OF_OBSCTACLE == 1) {
+//					g.fillRect(obstacleX[i], obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//				} else if (DIRECTION_OF_OBSCTACLE == 2) {
+//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//				} else if (DIRECTION_OF_OBSCTACLE == 3) {
+//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i], UNIT_SIZE, UNIT_SIZE);
+//				} else if (DIRECTION_OF_OBSCTACLE == 4) {
+//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//				} else if (DIRECTION_OF_OBSCTACLE == 5) {
+//					g.fillRect(obstacleX[i], obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//				} else if (DIRECTION_OF_OBSCTACLE == 6) {
+//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
+//				} else {
+//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i], UNIT_SIZE, UNIT_SIZE);
+//				}
+//			}
+//		}
 	}
 
 	public void draw(Graphics g) {
@@ -100,8 +135,6 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		if(running) {
 
-
-
 //			for(int i=0;i<SCREEN_HEIGHT/UNIT_SIZE;i++) {
 //
 //				g.drawLine(i*UNIT_SIZE, 0, i*UNIT_SIZE, SCREEN_HEIGHT);
@@ -109,8 +142,6 @@ public class GamePanel extends JPanel implements ActionListener{
 //				g.drawLine(0, i*UNIT_SIZE, SCREEN_WIDTH, i*UNIT_SIZE);
 //
 //			}
-
-
 
 			g.setColor(new Color(217,84,60));
 
@@ -240,6 +271,17 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		}
 
+		//Check if head touches obstacle
+
+		Rectangle snakeHead = new Rectangle(x[0],y[0],UNIT_SIZE,UNIT_SIZE);
+
+		for (Rectangle obstacle : obstacles) {
+			if (obstacle.intersects(snakeHead)) {
+				System.out.println("Snake collided with an obstacle!");
+				running = false;
+			}
+		}
+
 		//check if head touches left border
 
 		if(x[0] < 0) {
@@ -272,7 +314,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		}
 
-		
+
 
 		if(!running) {
 
@@ -284,6 +326,8 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	public void gameOver(Graphics g) {
 
+		obstacles.clear();
+		repaint();
 		//Score
 
 		g.setColor(Color.WHITE);
@@ -383,9 +427,61 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 
 	public void placeObstacle() {
-		for (int i = 0; i < numObstacles; i++) {
-			obstacleX[i] = random.nextInt((int) (SCREEN_WIDTH / UNIT_SIZE)) * UNIT_SIZE;
-			obstacleY[i] = random.nextInt((int) (SCREEN_HEIGHT / UNIT_SIZE)) * UNIT_SIZE;
+		// Add obstacles for the current level
+		if (level == 1) {
+			obstacles.add(new Rectangle(100, 260, 100, 20));
+			obstacles.add(new Rectangle(300, 260, 100, 20));
+			obstacles.add(new Rectangle(500, 260, 100, 20));
+			obstacles.add(new Rectangle(200, 140, 100, 20));
+			obstacles.add(new Rectangle(400, 140, 100, 20));
+			obstacles.add(new Rectangle(300, 40, 100, 20));
+			obstacles.add(new Rectangle(100, 340, 40, 20));
+			obstacles.add(new Rectangle(500, 340, 40, 20));
+			obstacles.add(new Rectangle(260, 40, 20, 20));
+			obstacles.add(new Rectangle(460, 20, 20, 20));
+			obstacles.add(new Rectangle(100, 620, 100, 20));
+			obstacles.add(new Rectangle(300, 620, 100, 20));
+			obstacles.add(new Rectangle(500, 680, 100, 20));
+			obstacles.add(new Rectangle(200, 580, 100, 20));
+			obstacles.add(new Rectangle(400, 560, 100, 20));
+			obstacles.add(new Rectangle(300, 460, 100, 20));
+			obstacles.add(new Rectangle(100, 760, 20, 20));
+			obstacles.add(new Rectangle(500, 780, 20, 20));
+			obstacles.add(new Rectangle(260, 480, 20, 20));
+			obstacles.add(new Rectangle(460, 480, 20, 20));
+			obstacles.add(new Rectangle(600, 260, 100, 20));
+			obstacles.add(new Rectangle(900, 260, 100, 20));
+			obstacles.add(new Rectangle(1000, 260, 100, 20));
+			obstacles.add(new Rectangle(800, 140, 100, 20));
+			obstacles.add(new Rectangle(800, 140, 100, 20));
+			obstacles.add(new Rectangle(600, 40, 100, 20));
+			obstacles.add(new Rectangle(700, 340, 40, 20));
+			obstacles.add(new Rectangle(1000, 340, 40, 20));
+			obstacles.add(new Rectangle(560, 40, 20, 20));
+			obstacles.add(new Rectangle(760, 20, 20, 20));
+			obstacles.add(new Rectangle(1000, 620, 100, 20));
+			obstacles.add(new Rectangle(700, 620, 100, 20));
+			obstacles.add(new Rectangle(1000, 680, 100, 20));
+			obstacles.add(new Rectangle(700, 580, 100, 20));
+			obstacles.add(new Rectangle(600, 560, 100, 20));
+			obstacles.add(new Rectangle(1000, 460, 100, 20));
+			obstacles.add(new Rectangle(800, 760, 20, 20));
+			obstacles.add(new Rectangle(600, 780, 20, 20));
+			obstacles.add(new Rectangle(760, 480, 20, 20));
+			obstacles.add(new Rectangle(960, 480, 20, 20));
+
+
+		} else if (level == 2) {
+			obstacles.add(new Rectangle(100, 100, 50, 50));
+			obstacles.add(new Rectangle(200, 200, 50, 50));
+		} else if (level == 3) {
+			obstacles.add(new Rectangle(100, 100, 50, 50));
+			obstacles.add(new Rectangle(200, 200, 50, 50));
+			obstacles.add(new Rectangle(300, 300, 50, 50));
+		} else if (level == 4) {
+			// Add more obstacles for level 4
+		} else if (level == 5) {
+			// Add even more obstacles for level 5
 		}
 	}
 

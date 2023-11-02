@@ -28,7 +28,7 @@ public class GamePanel extends JPanel implements ActionListener{
 	static final int DELAY = 70;
 
 	int level = 1;
-	int bodyParts = 6;
+	int bodyParts = 4;
 	int applesEaten;
 	int appleX;
 	int appleY;
@@ -64,7 +64,8 @@ public class GamePanel extends JPanel implements ActionListener{
 		x = new int[GAME_UNITS];
 		y = new int[GAME_UNITS];
 		direction = 'R';
-		bodyParts = 6;
+		applesEaten = 0;
+		bodyParts = 4;
 
 		newApple();
 
@@ -97,12 +98,8 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	public void paintObstacles(Graphics g){
 
-		g.setColor(Color.WHITE);
-
-
-
 		//Failed attempt at procedural generation:
-
+//		g.setColor(Color.WHITE);
 //		for (int i = 0; i < numObstacles; i++) {
 //			g.fillRect(obstacleX[i], obstacleY[i], UNIT_SIZE, UNIT_SIZE);
 //			int LENGTH_OF_OBSTACLE = random.nextInt(UNIT_SIZE*10)+UNIT_SIZE;

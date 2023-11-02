@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="pretty snake">
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,7 +64,7 @@
       <updated>1698867582679</updated>
       <workItem from="1698867583808" duration="1215000" />
       <workItem from="1698916281441" duration="328000" />
-      <workItem from="1698932965487" duration="4746000" />
+      <workItem from="1698932965487" duration="8160000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1698916482702</created>
@@ -109,7 +108,28 @@
       <option name="project" value="LOCAL" />
       <updated>1698936378630</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Added a restart feature and fixed a bug where the snake crushes upon restarting">
+      <created>1698939508479</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1698939508479</updated>
+    </task>
+    <task id="LOCAL-00008" summary="updated gitignore">
+      <created>1698939558865</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1698939558865</updated>
+    </task>
+    <task id="LOCAL-00009" summary="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key">
+      <created>1698941993512</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1698941993512</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -138,6 +158,9 @@
     <MESSAGE value="Added working obstacles, and their collision" />
     <MESSAGE value="better obstacles" />
     <MESSAGE value="pretty snake" />
-    <option name="LAST_COMMIT_MESSAGE" value="pretty snake" />
+    <MESSAGE value="Added a restart feature and fixed a bug where the snake crushes upon restarting" />
+    <MESSAGE value="updated gitignore" />
+    <MESSAGE value="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key" />
+    <option name="LAST_COMMIT_MESSAGE" value="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key" />
   </component>
 </project>

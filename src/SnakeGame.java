@@ -3,6 +3,8 @@
 
 public class SnakeGame {
 
+	//Main
+
 	public static void main(String[] args) {
 		 new GameFrame();
 	}

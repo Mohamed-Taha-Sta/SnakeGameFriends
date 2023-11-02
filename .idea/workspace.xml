@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES.">
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Added working obstacles, and their collision">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -65,6 +64,7 @@
       <updated>1698867582679</updated>
       <workItem from="1698867583808" duration="1215000" />
       <workItem from="1698916281441" duration="328000" />
+      <workItem from="1698932965487" duration="666000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1698916482702</created>
@@ -87,7 +87,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698923459214</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added working obstacles, and their collision">
+      <created>1698932799885</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1698932799885</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -113,6 +120,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
     <MESSAGE value="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES." />
+    <MESSAGE value="Added working obstacles, and their collision" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added working obstacles, and their collision" />
   </component>
 </project>

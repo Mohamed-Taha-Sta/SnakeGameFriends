@@ -154,7 +154,6 @@ public class GamePanel extends JPanel implements ActionListener{
 				if(i == 0) {
 
 					g.setColor(new Color(98, 190, 155));
-
 					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 
 				}
@@ -162,10 +161,11 @@ public class GamePanel extends JPanel implements ActionListener{
 				else {
 
 					g.setColor(new Color(59, 146, 116));
+					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 
 					//g.setColor(new Color(random.nextInt(255),random.nextInt(255),random.nextInt(255)));
 
-					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
+
 
 				}			
 
@@ -277,7 +277,6 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		for (Rectangle obstacle : obstacles) {
 			if (obstacle.intersects(snakeHead)) {
-				System.out.println("Snake collided with an obstacle!");
 				running = false;
 			}
 		}

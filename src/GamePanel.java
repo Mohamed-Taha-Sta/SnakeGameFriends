@@ -29,7 +29,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/(UNIT_SIZE*UNIT_SIZE);
 
-	static final int DELAY = 100;
+	static final int DELAY = 50;
 
 	int level = 1;
 	int bodyParts = 6;
@@ -147,29 +147,19 @@ public class GamePanel extends JPanel implements ActionListener{
 
 			g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-		
 
-			for(int i = 0; i< bodyParts;i++) {
 
-				if(i == 0) {
-
-					g.setColor(new Color(98, 190, 155));
-					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
-
+			for (int i = 0; i < bodyParts; i++) {
+				if (i == 0) {
+					g.setColor(new Color(98, 190, 155)); // Set a different color for the head
+				} else if (i % 2 == 0) {
+					g.setColor(new Color(98, 190, 155)); // Use one color for even body parts
+				} else {
+					g.setColor(new Color(59, 146, 116)); // Use another color for odd body parts
 				}
-
-				else {
-
-					g.setColor(new Color(59, 146, 116));
-					g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
-
-					//g.setColor(new Color(random.nextInt(255),random.nextInt(255),random.nextInt(255)));
-
-
-
-				}			
-
+				g.fillRect(x[i], y[i], UNIT_SIZE, UNIT_SIZE);
 			}
+
 
 			g.setColor(Color.white);
 
@@ -445,14 +435,14 @@ public class GamePanel extends JPanel implements ActionListener{
 			obstacles.add(new Rectangle(400, 560, 100, 20));
 			obstacles.add(new Rectangle(300, 460, 100, 20));
 			obstacles.add(new Rectangle(100, 760, 20, 20));
-			obstacles.add(new Rectangle(500, 780, 20, 20));
+			obstacles.add(new Rectangle(500, 780, 20, 120));
 			obstacles.add(new Rectangle(260, 480, 20, 20));
 			obstacles.add(new Rectangle(460, 480, 20, 20));
 			obstacles.add(new Rectangle(600, 260, 100, 20));
 			obstacles.add(new Rectangle(900, 260, 100, 20));
 			obstacles.add(new Rectangle(1000, 260, 100, 20));
 			obstacles.add(new Rectangle(800, 140, 100, 20));
-			obstacles.add(new Rectangle(800, 140, 100, 20));
+			obstacles.add(new Rectangle(800, 140, 100, 120));
 			obstacles.add(new Rectangle(600, 40, 100, 20));
 			obstacles.add(new Rectangle(700, 340, 40, 20));
 			obstacles.add(new Rectangle(1000, 340, 40, 20));
@@ -463,11 +453,11 @@ public class GamePanel extends JPanel implements ActionListener{
 			obstacles.add(new Rectangle(1000, 680, 100, 20));
 			obstacles.add(new Rectangle(700, 580, 100, 20));
 			obstacles.add(new Rectangle(600, 560, 100, 20));
-			obstacles.add(new Rectangle(1000, 460, 100, 20));
+			obstacles.add(new Rectangle(1000, 460, 20, 80));
 			obstacles.add(new Rectangle(800, 760, 20, 20));
 			obstacles.add(new Rectangle(600, 780, 20, 20));
-			obstacles.add(new Rectangle(760, 480, 20, 20));
-			obstacles.add(new Rectangle(960, 480, 20, 20));
+			obstacles.add(new Rectangle(760, 480, 20, 80));
+			obstacles.add(new Rectangle(960, 480, 20, 60));
 
 
 		} else if (level == 2) {

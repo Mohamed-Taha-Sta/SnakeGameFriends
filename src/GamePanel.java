@@ -13,13 +13,9 @@ import java.util.Random;
 
 public class GamePanel extends JPanel implements ActionListener{
 
-	final int x[] = new int[GAME_UNITS];
+	int[] x;
 
-	final int y[] = new int[GAME_UNITS];
-	private int[] obstacleXStart = new int[GAME_UNITS];
-	private int[] obstacleYStart = new int[GAME_UNITS];
-	private int[] obstacleXEnd = new int[GAME_UNITS];
-	private int[] obstacleYEnd = new int[GAME_UNITS];
+	int[] y;
 	private int numObstacles = 8;
 	static final int SCREEN_WIDTH = 1300;
 
@@ -29,7 +25,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/(UNIT_SIZE*UNIT_SIZE);
 
-	static final int DELAY = 50;
+	static final int DELAY = 70;
 
 	int level = 1;
 	int bodyParts = 6;
@@ -64,6 +60,11 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 
 	public void startGame() {
+
+		x = new int[GAME_UNITS];
+		y = new int[GAME_UNITS];
+		direction = 'R';
+		bodyParts = 6;
 
 		newApple();
 
@@ -170,23 +171,28 @@ public class GamePanel extends JPanel implements ActionListener{
 			g.drawString("Score: "+applesEaten, (SCREEN_WIDTH - metrics.stringWidth("Score: "+applesEaten))/2, g.getFont().getSize());
 
 		}
-
 		else {
-
 			gameOver(g);
-
 		}
-
-		
 
 	}
 
 	public void newApple(){
+		do {
+			appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
+			appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
+		} while (appleInObstacle());
+	}
 
-		appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE))*UNIT_SIZE;
+	public boolean appleInObstacle() {
+		Rectangle appleRect = new Rectangle(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-		appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE))*UNIT_SIZE;
-
+		for (Rectangle obstacle : obstacles) {
+			if (appleRect.intersects(obstacle)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void move(){
@@ -330,33 +336,30 @@ public class GamePanel extends JPanel implements ActionListener{
 		//Game Over text
 
 		g.setColor(Color.WHITE);
-
 		g.setFont( new Font("Roboto",Font.PLAIN, 75));
-
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
-
 		g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
+
+		//Restart text
+
+		g.setFont( new Font("Roboto",Font.PLAIN, 20));
+		FontMetrics metrics3 = getFontMetrics(g.getFont());
+		g.drawString("Press 'R' to Restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to Restart"))/2, SCREEN_HEIGHT/2+2*UNIT_SIZE);
+
 
 	}
 
 	@Override
 
 	public void actionPerformed(ActionEvent e) {
-
-		
-
 		if(running) {
-
 			move();
 
 			checkApple();
 
 			checkCollisions();
-
 		}
-
 		repaint();
-
 	}
 
 	
@@ -405,6 +408,13 @@ public class GamePanel extends JPanel implements ActionListener{
 
 					direction = 'D';
 
+				}
+
+				break;
+			case KeyEvent.VK_R:
+
+				if (!running) {
+					startGame(); // Restart the game when 'R' is pressed
 				}
 
 				break;

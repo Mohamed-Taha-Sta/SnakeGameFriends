@@ -1,10 +1,11 @@
 //*****************************************
 
-import javax.swing.JFrame;
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
-
-public class GameFrame extends JFrame{
+public class GameFrame extends JFrame {
 
 
 	GameFrame(){
@@ -12,6 +13,8 @@ public class GameFrame extends JFrame{
 		this.add(new GamePanel());
 
 		this.setTitle("Snake");
+
+
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -22,7 +25,6 @@ public class GameFrame extends JFrame{
 		this.setVisible(true);
 
 		this.setLocationRelativeTo(null);
-
 
 	}
 

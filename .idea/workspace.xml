@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="better obstacles">
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="pretty snake">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -64,7 +65,7 @@
       <updated>1698867582679</updated>
       <workItem from="1698867583808" duration="1215000" />
       <workItem from="1698916281441" duration="328000" />
-      <workItem from="1698932965487" duration="1417000" />
+      <workItem from="1698932965487" duration="4746000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1698916482702</created>
@@ -101,7 +102,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698933821199</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="pretty snake">
+      <created>1698936378630</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1698936378630</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -129,6 +137,7 @@
     <MESSAGE value="Added Anti Aliasing, changed the colors, made the map bigger started adding obstacles, have yet to add collision to THE OBSTACLES." />
     <MESSAGE value="Added working obstacles, and their collision" />
     <MESSAGE value="better obstacles" />
-    <option name="LAST_COMMIT_MESSAGE" value="better obstacles" />
+    <MESSAGE value="pretty snake" />
+    <option name="LAST_COMMIT_MESSAGE" value="pretty snake" />
   </component>
 </project>

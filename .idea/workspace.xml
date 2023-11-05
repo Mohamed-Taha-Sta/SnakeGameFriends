@@ -4,14 +4,42 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key">
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Client Server Arch starter, server done, not debugged yet.">
+      <change afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ClientControl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/GameFrameOG.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/GameFramePlayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/GamePanelOG.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/GamePanelPlayer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Handler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/ImmediateResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/MovementNotif.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/MovementServ.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Request.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Response.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/SnakeGameOG.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Stats.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Test.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SnakeGame.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SnakeGame.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/SnakeGame.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Class" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -39,10 +67,34 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Taha\IdeaProjects\SnakeGame\src" />
     </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="" />
+    </key>
   </component>
-  <component name="RunManager">
-    <configuration name="SnakeGame" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="SnakeGame" />
+  <component name="RunManager" selected="Application.Client">
+    <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Client" />
+      <module name="SnakeGame" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Server" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Server" />
+      <module name="SnakeGame" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SnakeGameOG" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SnakeGameOG" />
+      <module name="SnakeGame" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Test" />
       <module name="SnakeGame" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -50,7 +102,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SnakeGame" />
+        <item itemvalue="Application.Client" />
+        <item itemvalue="Application.Server" />
+        <item itemvalue="Application.Test" />
+        <item itemvalue="Application.SnakeGameOG" />
       </list>
     </recent_temporary>
   </component>
@@ -64,7 +119,10 @@
       <updated>1698867582679</updated>
       <workItem from="1698867583808" duration="1215000" />
       <workItem from="1698916281441" duration="328000" />
-      <workItem from="1698932965487" duration="8160000" />
+      <workItem from="1698932965487" duration="9869000" />
+      <workItem from="1698945925606" duration="12348000" />
+      <workItem from="1699048307374" duration="3539000" />
+      <workItem from="1699207355310" duration="12204000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1698916482702</created>
@@ -129,7 +187,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698941993512</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="patched bugs, apple spawning and">
+      <created>1698944279639</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1698944279639</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -161,6 +226,8 @@
     <MESSAGE value="Added a restart feature and fixed a bug where the snake crushes upon restarting" />
     <MESSAGE value="updated gitignore" />
     <MESSAGE value="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key" />
-    <option name="LAST_COMMIT_MESSAGE" value="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key" />
+    <MESSAGE value="patched bugs, apple spawning and" />
+    <MESSAGE value="Client Server Arch starter, server done, not debugged yet." />
+    <option name="LAST_COMMIT_MESSAGE" value="Client Server Arch starter, server done, not debugged yet." />
   </component>
 </project>

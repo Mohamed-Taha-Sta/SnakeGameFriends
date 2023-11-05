@@ -2,12 +2,12 @@ import javax.swing.*;
 import java.io.IOException;
 import java.util.Vector;
 
-public class GameFrame extends JFrame {
+public class GameFramePlayer extends JFrame {
 
 
-	GameFrame(Vector<Player> players) throws IOException {
+	GameFramePlayer(Vector<Player> players, Player me) throws IOException, ClassNotFoundException {
 
-		this.add(new GamePanel(players));
+		this.add(new GamePanelPlayer(players, me));
 
 		this.setTitle("Snake");
 

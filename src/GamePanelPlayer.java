@@ -1,5 +1,4 @@
 import javax.swing.*;
-import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,12 +8,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.*;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Random;
+import java.util.Vector;
 
-public class GamePanel extends JPanel implements ActionListener{
+public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	private final Vector<Player> players;
+	private final Player me;
+	private final Socket matchSocket;
 	int[] x;
 	int[] y;
 	private int numObstacles = 8;
@@ -37,8 +40,8 @@ public class GamePanel extends JPanel implements ActionListener{
 	boolean running = false;
 	boolean obstaclesPainted = false;
 	private java.util.List<Rectangle> obstacles = new ArrayList<>();
-	Map<Player, ObjectInputStream> playersIn = new HashMap<>();
-	Map<Player, ObjectOutputStream> playersOut = new HashMap<>();
+	ObjectOutputStream out;
+	ObjectInputStream in;
 
 	Timer timer;
 
@@ -73,26 +76,30 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 	}
 
-	GamePanel(Vector<Player> players) throws IOException {
+	GamePanelPlayer(Vector<Player> players, Player me) throws IOException, ClassNotFoundException {
 
 		random = new Random();
 
 		this.players = players;
 
+		this.me = me;
+
+		matchSocket = new Socket("localhost",me.getHandlerPort());
+
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
 		this.setFocusable(true);
 
+		this.addKeyListener(new MyKeyAdapter());
+
 		startGame();
 
-		for(Player player : players){
-			playersIn.put(player,new ObjectInputStream(player.getPlayerSocket().getInputStream()));
-			playersOut.put(player,new ObjectOutputStream(player.getPlayerSocket().getOutputStream()));
-		}
+		out = new ObjectOutputStream(matchSocket.getOutputStream());
+		in = new ObjectInputStream(matchSocket.getInputStream());
 
 	}
 
-	public void startGame() throws IOException {
+	public void startGame() throws IOException, ClassNotFoundException {
 
 		init_players();
 
@@ -160,7 +167,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 
-		if(running) {
+		if(me.isRunning()) {
 
 			g.setColor(new Color(217,84,60));
 			g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
@@ -202,206 +209,109 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	}
 
-	public void newApple() throws IOException {
-		do {
-			appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
-			appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
-		} while (appleInObstacle() || !appleOutside());
-		//Send signal of coords of new apple
-
-		for (var entry : playersOut.entrySet()){
-			entry.getValue().writeObject(appleX);
-			entry.getValue().writeObject(appleY);
-		}
-
-	}
-
-	public boolean appleInObstacle() {
-		Rectangle appleRect = new Rectangle(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
-
-		for (Rectangle obstacle : obstacles) {
-			if (appleRect.intersects(obstacle)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean appleOutside() {
-		return appleX >= 0 && appleX < SCREEN_WIDTH && appleY >= 0 && appleY < SCREEN_HEIGHT;
+	public void newApple() throws IOException, ClassNotFoundException {
+		appleX = (Integer) in.readObject();
+		appleY = (Integer) in.readObject();;
 	}
 
 
 	public void sendMove() throws IOException {
-
-		//Send Everyone's movement
-		Map<Socket,Character> socketDirectionMap = new HashMap<>();
-		for (Player player : players){
-			socketDirectionMap.put(player.getPlayerSocket(),player.getDirection());
-		}
-
-		MovementServ movementServ = new MovementServ(socketDirectionMap);
-
-		for (var entry : playersOut.entrySet()){
-			entry.getValue().writeObject(movementServ);
-		}
-
+		out.writeObject(me.getDirection());
 	}
 
+	public void ReceiveMove() throws IOException, ClassNotFoundException {
 
-	public void receiveMove() throws IOException, ClassNotFoundException {
-
-		//Receive Everyone's movement
-
-		for (var entry : playersIn.entrySet()){
-			entry.getKey().setDirection((Character) entry.getValue().readObject());
-		}
-
-		for (int j=0; j<players.size();j++) {
-			int prevX = players.get(j).x[0];
-			int prevY = players.get(j).y[0];
-
-			for (int i = players.get(j).getBodyParts(); i > 0; i--) {
-
-				players.get(j).x[i] = players.get(j).x[i - 1];
-
-				players.get(j).y[i] = players.get(j).y[i - 1];
-
-			}
-
-			switch (players.get(j).getDirection()) {
-
-				case 'U':
-
-					players.get(j).y[0] = players.get(j).y[0] - UNIT_SIZE;
-
-					break;
-
-				case 'D':
-
-					players.get(j).y[0] = players.get(j).y[0] + UNIT_SIZE;
-
-					break;
-
-				case 'L':
-
-					players.get(j).x[0] = players.get(j).x[0] - UNIT_SIZE;
-
-					break;
-
-				case 'R':
-
-					players.get(j).x[0] = players.get(j).x[0] + UNIT_SIZE;
-
-					break;
-
-			}
-
-			if (players.get(j).x[0] < 0) {
-				players.get(j).x[0] = SCREEN_WIDTH - UNIT_SIZE;
-			} else if (players.get(j).x[0] >= SCREEN_WIDTH) {
-				players.get(j).x[0] = 0;
-			}
-			if (players.get(j).y[0] < 0) {
-				players.get(j).y[0] = SCREEN_HEIGHT - UNIT_SIZE;
-			} else if (players.get(j).y[0] >= SCREEN_HEIGHT) {
-				players.get(j).y[0] = 0;
-			}
-
-			// Move the rest of the body parts
-			for (int i = 1; i < players.get(j).getBodyParts(); i++) {
-				// Swap positions with the previous body part
-				int tempX = players.get(j).x[i];
-				int tempY = players.get(j).y[i];
-				players.get(j).x[i] = prevX;
-				players.get(j).y[i] = prevY;
-				prevX = tempX;
-				prevY = tempY;
-			}
-		}
-		
-
-	}
-
-	public void checkApple() throws IOException {
-		for (int i=0;i<players.size();i++) {
-			if ((players.get(i).x[0] == appleX) && (players.get(i).y[0] == appleY)) {
-				players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
-				players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
-				newApple();
-			}
-		}
-
-		Map<Socket, List<Integer>> playerStats = new HashMap<>();
-
-		for(Player player : players){
-			playerStats.put(player.getPlayerSocket(),Arrays.asList(player.getApplesEaten(),player.getBodyParts()));
-		}
-
-		for(var entry : playersOut.entrySet()){
-			entry.getValue().writeObject(new Stats(playerStats));
-		}
-
-	}
-
-	public void checkCollisions() {
-
-		// Add collisions between players
+		Map<Socket, Character> movementServ = ((MovementServ) in.readObject()).mouvements;
 
 		for (int j = 0; j < players.size(); j++) {
+			for (var entry : movementServ.entrySet()) {
+				if (entry.getKey() == players.get(j).getPlayerSocket()) {
+					int prevX = players.get(j).x[0];
+					int prevY = players.get(j).y[0];
 
-			//checks if head collides with body
+					for (int i = players.get(j).getBodyParts(); i > 0; i--) {
 
-			for (int i = players.get(j).getBodyParts(); i > 0; i--) {
+						players.get(j).x[i] = players.get(j).x[i - 1];
 
-				if ((players.get(j).x[0] == players.get(j).x[i]) && (players.get(j).y[0] == players.get(j).y[i])) {
-					players.get(j).setRunning(false);
+						players.get(j).y[i] = players.get(j).y[i - 1];
+
+					}
+
+					switch (players.get(j).getDirection()) {
+
+						case 'U':
+
+							players.get(j).y[0] = players.get(j).y[0] - UNIT_SIZE;
+
+							break;
+
+						case 'D':
+
+							players.get(j).y[0] = players.get(j).y[0] + UNIT_SIZE;
+
+							break;
+
+						case 'L':
+
+							players.get(j).x[0] = players.get(j).x[0] - UNIT_SIZE;
+
+							break;
+
+						case 'R':
+
+							players.get(j).x[0] = players.get(j).x[0] + UNIT_SIZE;
+
+							break;
+
+					}
+
+					if (players.get(j).x[0] < 0) {
+						players.get(j).x[0] = SCREEN_WIDTH - UNIT_SIZE;
+					} else if (players.get(j).x[0] >= SCREEN_WIDTH) {
+						players.get(j).x[0] = 0;
+					}
+					if (players.get(j).y[0] < 0) {
+						players.get(j).y[0] = SCREEN_HEIGHT - UNIT_SIZE;
+					} else if (players.get(j).y[0] >= SCREEN_HEIGHT) {
+						players.get(j).y[0] = 0;
+					}
+
+					// Move the rest of the body parts
+					for (int i = 1; i < players.get(j).getBodyParts(); i++) {
+						// Swap positions with the previous body part
+						int tempX = players.get(j).x[i];
+						int tempY = players.get(j).y[i];
+						players.get(j).x[i] = prevX;
+						players.get(j).y[i] = prevY;
+						prevX = tempX;
+						prevY = tempY;
+					}
 				}
-
 			}
-
-			//Check if head touches obstacle
-
-			Rectangle snakeHead = new Rectangle(players.get(j).x[0], players.get(j).y[0], UNIT_SIZE, UNIT_SIZE);
-
-			for (Rectangle obstacle : obstacles) {
-				if (obstacle.intersects(snakeHead)) {
-					players.get(j).setRunning(false);
-				}
-			}
-
 		}
-		boolean stillRunning = false;
-		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).isRunning())
-				stillRunning = true;
-		}
-
-		if (!stillRunning) {
-			running = false;
-			timer.stop();
-		}
-
-		// Delete player
-		// Send collision update
-		// Send Player Update
-
 	}
+	public void checkApple() throws IOException, ClassNotFoundException {
+
+		newApple();
+
+		Map<Socket, java.util.List<Integer>> playerStats = ((Stats) in.readObject()).getPlayerStats();
+		for (int i=0; i<players.size();i++){
+			for (var entry : playerStats.entrySet()){
+				if (players.get(i).getPlayerSocket() == entry.getKey()){
+					players.get(i).setApplesEaten(entry.getValue().get(0));
+					players.get(i).setBodyParts(entry.getValue().get(1));
+				}
+			}
+		}
+	}
+
+
+
 
 	public void gameOver(Graphics g) {
 
 		obstacles.clear();
 		repaint();
-		//BestScore
-		int bestScore = players.get(0).getApplesEaten();
-		String name = players.get(0).getName();
-		for (int i = 1; i<players.size();i++){
-			if (players.get(i).getApplesEaten() > bestScore)
-			{
-				bestScore = players.get(i).getApplesEaten();
-				name = players.get(i).getName();
-			}
-		}
 
 		g.setColor(Color.WHITE);
 
@@ -409,15 +319,14 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		FontMetrics metrics1 = getFontMetrics(g.getFont());
 
-		g.drawString("Best Score: "+bestScore, (SCREEN_WIDTH - metrics1.stringWidth("Best Score: "+bestScore))/2, g.getFont().getSize());
-		g.drawString("by: "+name, (SCREEN_WIDTH - metrics1.stringWidth("by: "+name))/2, g.getFont().getSize());
+		g.drawString("Your Score: "+me.getApplesEaten(), (SCREEN_WIDTH - metrics1.stringWidth("Your Score: "+me.getApplesEaten()))/2, g.getFont().getSize());
 
 		//Game Over text
 
 		g.setColor(Color.WHITE);
 		g.setFont( new Font("Roboto",Font.PLAIN, 75));
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
-		g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
+		g.drawString("Game Over "+me.getName(), (SCREEN_WIDTH - metrics2.stringWidth("Game Over "+me.getName()))/2, SCREEN_HEIGHT/2);
 
 		//Restart text
 
@@ -435,25 +344,93 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 
 	@Override
-
 	public void actionPerformed(ActionEvent e) {
-		if(running) {
+		if(me.isRunning()) {
 			try {
-
-				receiveMove();
 				sendMove();
+				ReceiveMove();
 				checkApple();
-				checkCollisions();
-
 			} catch (IOException | ClassNotFoundException ex) {
 				throw new RuntimeException(ex);
 			}
 
-
 		}
+
+
 		repaint();
 	}
 
+	
+
+	public class MyKeyAdapter extends KeyAdapter{
+
+		@Override
+
+		public void keyPressed(KeyEvent e) {
+
+			switch(e.getKeyCode()) {
+
+			case KeyEvent.VK_LEFT:
+
+				if(me.getDirection() != 'R') {
+
+					me.setDirection('L');
+
+				}
+
+				break;
+
+			case KeyEvent.VK_RIGHT:
+
+				if(me.getDirection() != 'L') {
+
+					me.setDirection('R');
+
+				}
+
+				break;
+
+			case KeyEvent.VK_UP:
+
+				if(me.getDirection() != 'D') {
+
+					me.setDirection('U');
+
+				}
+
+				break;
+
+			case KeyEvent.VK_DOWN:
+
+				if(me.getDirection() != 'U') {
+
+					me.setDirection('D');
+
+				}
+
+				break;
+			case KeyEvent.VK_R:
+
+				if (!me.isRunning()) {
+					try {
+						startGame();
+					} catch (IOException | ClassNotFoundException ex) {
+						throw new RuntimeException(ex);
+					}
+				}
+				break;
+
+			case KeyEvent.VK_ESCAPE:
+
+				System.exit(0);
+				break;
+			}
+
+
+
+		}
+
+	}
 
 	public void placeObstacle() {
 		// Add obstacles for the current level

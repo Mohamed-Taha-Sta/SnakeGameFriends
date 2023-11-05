@@ -1,15 +1,14 @@
 import javax.swing.*;
-import java.io.IOException;
-import java.util.Vector;
-
-public class GameFrame extends JFrame {
+public class GameFrameOG extends JFrame {
 
 
-	GameFrame(Vector<Player> players) throws IOException {
+	GameFrameOG(){
 
-		this.add(new GamePanel(players));
+		this.add(new GamePanelOG());
 
 		this.setTitle("Snake");
+
+
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

@@ -17,7 +17,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	private final Vector<Player> players;
 	private final Player me;
-	private final Socket matchSocket;
 	int[] x;
 	int[] y;
 	private int numObstacles = 8;
@@ -40,8 +39,8 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 	boolean running = false;
 	boolean obstaclesPainted = false;
 	private java.util.List<Rectangle> obstacles = new ArrayList<>();
-	ObjectOutputStream out;
-	ObjectInputStream in;
+	private final ObjectOutputStream out;
+	private final ObjectInputStream in;
 
 	Timer timer;
 
@@ -76,15 +75,14 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		}
 	}
 
-	GamePanelPlayer(Vector<Player> players, Player me) throws IOException, ClassNotFoundException {
+	GamePanelPlayer(Vector<Player> players, Player me, ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+		System.out.println("were in gamePanel player and this is input" + in);
 
 		random = new Random();
 
 		this.players = players;
 
 		this.me = me;
-
-		matchSocket = new Socket("localhost",me.getHandlerPort());
 
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
@@ -94,8 +92,8 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 		startGame();
 
-		out = new ObjectOutputStream(matchSocket.getOutputStream());
-		in = new ObjectInputStream(matchSocket.getInputStream());
+		this.out = out;
+		this.in = in;
 
 	}
 
@@ -211,7 +209,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	public void newApple() throws IOException, ClassNotFoundException {
 		appleX = (Integer) in.readObject();
-		appleY = (Integer) in.readObject();;
+		appleY = (Integer) in.readObject();
 	}
 
 
@@ -221,88 +219,98 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	public void ReceiveMove() throws IOException, ClassNotFoundException {
 
-		Map<Socket, Character> movementServ = ((MovementServ) in.readObject()).mouvements;
-
-		for (int j = 0; j < players.size(); j++) {
-			for (var entry : movementServ.entrySet()) {
-				if (entry.getKey() == players.get(j).getPlayerSocket()) {
-					int prevX = players.get(j).x[0];
-					int prevY = players.get(j).y[0];
-
-					for (int i = players.get(j).getBodyParts(); i > 0; i--) {
-
-						players.get(j).x[i] = players.get(j).x[i - 1];
-
-						players.get(j).y[i] = players.get(j).y[i - 1];
-
-					}
-
-					switch (players.get(j).getDirection()) {
-
-						case 'U':
-
-							players.get(j).y[0] = players.get(j).y[0] - UNIT_SIZE;
-
-							break;
-
-						case 'D':
-
-							players.get(j).y[0] = players.get(j).y[0] + UNIT_SIZE;
-
-							break;
-
-						case 'L':
-
-							players.get(j).x[0] = players.get(j).x[0] - UNIT_SIZE;
-
-							break;
-
-						case 'R':
-
-							players.get(j).x[0] = players.get(j).x[0] + UNIT_SIZE;
-
-							break;
-
-					}
-
-					if (players.get(j).x[0] < 0) {
-						players.get(j).x[0] = SCREEN_WIDTH - UNIT_SIZE;
-					} else if (players.get(j).x[0] >= SCREEN_WIDTH) {
-						players.get(j).x[0] = 0;
-					}
-					if (players.get(j).y[0] < 0) {
-						players.get(j).y[0] = SCREEN_HEIGHT - UNIT_SIZE;
-					} else if (players.get(j).y[0] >= SCREEN_HEIGHT) {
-						players.get(j).y[0] = 0;
-					}
-
-					// Move the rest of the body parts
-					for (int i = 1; i < players.get(j).getBodyParts(); i++) {
-						// Swap positions with the previous body part
-						int tempX = players.get(j).x[i];
-						int tempY = players.get(j).y[i];
-						players.get(j).x[i] = prevX;
-						players.get(j).y[i] = prevY;
-						prevX = tempX;
-						prevY = tempY;
-					}
-				}
-			}
+		for (int i = 0; i<players.size();i++){
+			players.get(i).setDirection((Character) in.readObject());
 		}
+
+//		Map<Socket, Character> movementServ = ((MovementServ) in.readObject()).mouvements;
+//
+//		for (int j = 0; j < players.size(); j++) {
+//			for (var entry : movementServ.entrySet()) {
+//				if (entry.getKey() == players.get(j).getPlayerSocket()) {
+//					int prevX = players.get(j).x[0];
+//					int prevY = players.get(j).y[0];
+//
+//					for (int i = players.get(j).getBodyParts(); i > 0; i--) {
+//
+//						players.get(j).x[i] = players.get(j).x[i - 1];
+//
+//						players.get(j).y[i] = players.get(j).y[i - 1];
+//
+//					}
+//
+//					switch (players.get(j).getDirection()) {
+//
+//						case 'U':
+//
+//							players.get(j).y[0] = players.get(j).y[0] - UNIT_SIZE;
+//
+//							break;
+//
+//						case 'D':
+//
+//							players.get(j).y[0] = players.get(j).y[0] + UNIT_SIZE;
+//
+//							break;
+//
+//						case 'L':
+//
+//							players.get(j).x[0] = players.get(j).x[0] - UNIT_SIZE;
+//
+//							break;
+//
+//						case 'R':
+//
+//							players.get(j).x[0] = players.get(j).x[0] + UNIT_SIZE;
+//
+//							break;
+//
+//					}
+//
+//					if (players.get(j).x[0] < 0) {
+//						players.get(j).x[0] = SCREEN_WIDTH - UNIT_SIZE;
+//					} else if (players.get(j).x[0] >= SCREEN_WIDTH) {
+//						players.get(j).x[0] = 0;
+//					}
+//					if (players.get(j).y[0] < 0) {
+//						players.get(j).y[0] = SCREEN_HEIGHT - UNIT_SIZE;
+//					} else if (players.get(j).y[0] >= SCREEN_HEIGHT) {
+//						players.get(j).y[0] = 0;
+//					}
+//
+//					// Move the rest of the body parts
+//					for (int i = 1; i < players.get(j).getBodyParts(); i++) {
+//						// Swap positions with the previous body part
+//						int tempX = players.get(j).x[i];
+//						int tempY = players.get(j).y[i];
+//						players.get(j).x[i] = prevX;
+//						players.get(j).y[i] = prevY;
+//						prevX = tempX;
+//						prevY = tempY;
+//					}
+//				}
+//			}
+//		}
 	}
 	public void checkApple() throws IOException, ClassNotFoundException {
 
 		newApple();
 
-		Map<Socket, java.util.List<Integer>> playerStats = ((Stats) in.readObject()).getPlayerStats();
-		for (int i=0; i<players.size();i++){
-			for (var entry : playerStats.entrySet()){
-				if (players.get(i).getPlayerSocket() == entry.getKey()){
-					players.get(i).setApplesEaten(entry.getValue().get(0));
-					players.get(i).setBodyParts(entry.getValue().get(1));
-				}
-			}
+		for(int i = 0; i<players.size();i++){
+			players.get(i).setApplesEaten((Integer) in.readObject());
+			players.get(i).setBodyParts((Integer) in.readObject());
 		}
+
+
+//		Map<Socket, java.util.List<Integer>> playerStats = ((Stats) in.readObject()).getPlayerStats();
+//		for (int i=0; i<players.size();i++){
+//			for (var entry : playerStats.entrySet()){
+//				if (players.get(i).getPlayerSocket() == entry.getKey()){
+//					players.get(i).setApplesEaten(entry.getValue().get(0));
+//					players.get(i).setBodyParts(entry.getValue().get(1));
+//				}
+//			}
+//		}
 	}
 
 

@@ -4,29 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Client Server Arch starter, server done, not debugged yet.">
-      <change afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ClientControl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GameFrameOG.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GameFramePlayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GamePanelOG.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/GamePanelPlayer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Handler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ImmediateResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/MovementNotif.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/MovementServ.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Request.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Response.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/SnakeGameOG.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Stats.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Test.java" afterDir="false" />
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="Major Major advancements. Base game is SnakeGameOG, working to make distributed. It's giving a headache however, But I'm inching closer.">
+      <change afterPath="$PROJECT_DIR$/src/Client_ver2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Server_ver2.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SnakeGame.iml" beforeDir="false" afterPath="$PROJECT_DIR$/SnakeGame.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GameFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GameFramePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GameFramePlayer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SnakeGame.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/GamePanelPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanelPlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Handler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Handler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Player.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Server.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Test.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -71,9 +60,16 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Client">
+  <component name="RunManager" selected="Application.Server_ver2">
     <configuration name="Client" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="Client" />
+      <module name="SnakeGame" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Client_ver2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Client_ver2" />
       <module name="SnakeGame" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -86,8 +82,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="SnakeGameOG" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="SnakeGameOG" />
+    <configuration name="Server_ver2" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Server_ver2" />
       <module name="SnakeGame" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -102,10 +98,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.Client_ver2" />
+        <item itemvalue="Application.Server_ver2" />
         <item itemvalue="Application.Client" />
         <item itemvalue="Application.Server" />
         <item itemvalue="Application.Test" />
-        <item itemvalue="Application.SnakeGameOG" />
       </list>
     </recent_temporary>
   </component>
@@ -122,7 +119,9 @@
       <workItem from="1698932965487" duration="9869000" />
       <workItem from="1698945925606" duration="12348000" />
       <workItem from="1699048307374" duration="3539000" />
-      <workItem from="1699207355310" duration="12204000" />
+      <workItem from="1699207355310" duration="13944000" />
+      <workItem from="1699254909196" duration="1599000" />
+      <workItem from="1699301474152" duration="8927000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1698916482702</created>
@@ -194,7 +193,14 @@
       <option name="project" value="LOCAL" />
       <updated>1698944279639</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Major Major advancements. Base game is SnakeGameOG, working to make distributed. It's giving a headache however, But I'm inching closer.">
+      <created>1699225144368</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1699225144368</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -228,6 +234,7 @@
     <MESSAGE value="snake now crosses border, snake has gradient colors, patched a bug where apple spawns outside borders, implements esc key" />
     <MESSAGE value="patched bugs, apple spawning and" />
     <MESSAGE value="Client Server Arch starter, server done, not debugged yet." />
-    <option name="LAST_COMMIT_MESSAGE" value="Client Server Arch starter, server done, not debugged yet." />
+    <MESSAGE value="Major Major advancements. Base game is SnakeGameOG, working to make distributed. It's giving a headache however, But I'm inching closer." />
+    <option name="LAST_COMMIT_MESSAGE" value="Major Major advancements. Base game is SnakeGameOG, working to make distributed. It's giving a headache however, But I'm inching closer." />
   </component>
 </project>

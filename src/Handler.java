@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -23,21 +24,39 @@ public class Handler implements Runnable{
 //        players.add(new Player("ziad",new Socket()));
 //        players.add(new Player("Mohamed", new Socket()));
         int handlerPort = 4445;
+        ServerSocket handlerSocket;
+        Socket clientSocket;
         try {
-            ServerSocket handlerSocket = new ServerSocket(handlerPort);
+            handlerSocket = new ServerSocket(handlerPort);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        for(Player player : players){
+        while (players.size()<1){
             try {
-                ObjectOutputStream out = new ObjectOutputStream(player.getPlayerSocket().getOutputStream());
-                out.writeObject(handlerPort);
-            } catch (IOException e) {
+                System.out.println("here");
+                clientSocket = handlerSocket.accept();
+                ObjectInputStream in = new ObjectInputStream(clientSocket.getInputStream());
+                ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+                String s = (String) in.readObject();
+                System.out.println(s);
+                System.out.println("here2");
+                System.out.println(players.size()+" inside while");
+            } catch (IOException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-
         }
+        System.out.println(players.size()+" Out while");
+
+//
+//        for(Player player : players){
+//            try {
+//                ObjectOutputStream out = new ObjectOutputStream(player.getHandlerPlayerSocket().getOutputStream());
+//                out.writeObject(handlerPort);
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
 
         try {
             new GameFrame(players);

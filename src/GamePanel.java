@@ -238,12 +238,20 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		//Send Everyone's movement
 
-		for (Player player : players){
-			for (Player player1 : players){
-				player.getOut().writeObject(player1.getDirection());
+//		for (Player player : players){
+//			for (Player player1 : players){
+//				player.getOut().writeObject(player1.getDirection());
+//				System.out.println(player+" sending to "+player1);
+//			}
+//		}
+
+		for (int i=0; i<players.size();i++){
+			for(int j = 0;j<players.size();j++){
+				players.get(i).getOut().writeObject(players.get(j).getDirection());
+				System.out.println(players.get(i)+" sending to "+players.get(j));
+				players.get(i).getOut().flush();
 			}
 		}
-
 
 
 //		Map<Socket,Character> socketDirectionMap = new HashMap<>();
@@ -341,15 +349,19 @@ public class GamePanel extends JPanel implements ActionListener{
 	public void checkApple() throws IOException {
 		for (int i=0;i<players.size();i++) {
 			if ((players.get(i).x[0] == appleX) && (players.get(i).y[0] == appleY)) {
+				newApple();
 				players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
 				players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
-				newApple();
 			}
 		}
 
 		for (int i=0; i<players.size();i++){
-			players.get(i).getOut().writeObject(players.get(i).getApplesEaten());
-			players.get(i).getOut().writeObject(players.get(i).getBodyParts());
+			System.out.println(players.get(i).getOut());
+			Integer apples = players.get(i).getApplesEaten();
+			Integer bodyparts = players.get(i).getBodyParts();
+			System.out.println(apples+" "+bodyparts);
+			players.get(i).getOut().writeObject(apples);
+			players.get(i).getOut().writeObject(bodyparts);
 		}
 
 //		Map<Socket, List<Integer>> playerStats = new HashMap<>();

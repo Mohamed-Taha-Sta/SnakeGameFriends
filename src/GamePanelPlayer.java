@@ -214,6 +214,72 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	public void sendMove() throws IOException {
 		out.writeObject(me.getDirection());
+
+		for (int j=0; j<players.size();j++) {
+			int prevX = players.get(j).x[0];
+			int prevY = players.get(j).y[0];
+
+			for (int i = players.get(j).getBodyParts(); i > 0; i--) {
+
+				players.get(j).x[i] = players.get(j).x[i - 1];
+
+				players.get(j).y[i] = players.get(j).y[i - 1];
+
+			}
+
+			switch (players.get(j).getDirection()) {
+
+				case 'U':
+
+					players.get(j).y[0] = players.get(j).y[0] - UNIT_SIZE;
+
+					break;
+
+				case 'D':
+
+					players.get(j).y[0] = players.get(j).y[0] + UNIT_SIZE;
+
+					break;
+
+				case 'L':
+
+					players.get(j).x[0] = players.get(j).x[0] - UNIT_SIZE;
+
+					break;
+
+				case 'R':
+
+					players.get(j).x[0] = players.get(j).x[0] + UNIT_SIZE;
+
+					break;
+
+			}
+
+			if (players.get(j).x[0] < 0) {
+				players.get(j).x[0] = SCREEN_WIDTH - UNIT_SIZE;
+			} else if (players.get(j).x[0] >= SCREEN_WIDTH) {
+				players.get(j).x[0] = 0;
+			}
+			if (players.get(j).y[0] < 0) {
+				players.get(j).y[0] = SCREEN_HEIGHT - UNIT_SIZE;
+			} else if (players.get(j).y[0] >= SCREEN_HEIGHT) {
+				players.get(j).y[0] = 0;
+			}
+
+			// Move the rest of the body parts
+			for (int i = 1; i < players.get(j).getBodyParts(); i++) {
+				// Swap positions with the previous body part
+				int tempX = players.get(j).x[i];
+				int tempY = players.get(j).y[i];
+				players.get(j).x[i] = prevX;
+				players.get(j).y[i] = prevY;
+				prevX = tempX;
+				prevY = tempY;
+			}
+		}
+
+
+
 	}
 
 	public void ReceiveMove() throws IOException, ClassNotFoundException {
@@ -222,15 +288,17 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			players.get(i).setDirection((Character) in.readObject());
 		}
 
+
 	}
 	public void checkApple() throws IOException, ClassNotFoundException {
 
 		newApple();
-
+		System.out.println("hello apple stuck here");
 		for(int i = 0; i<players.size();i++){
 			players.get(i).setApplesEaten((Integer) in.readObject());
 			players.get(i).setBodyParts((Integer) in.readObject());
 		}
+		System.out.println("Apple unstuck");
 
 	}
 
@@ -279,6 +347,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 				sendMove();
 				ReceiveMove();
 				checkApple();
+				System.out.println("action performed client");
 			} catch (IOException | ClassNotFoundException ex) {
 				throw new RuntimeException(ex);
 			}

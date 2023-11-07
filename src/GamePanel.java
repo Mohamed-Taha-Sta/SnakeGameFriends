@@ -348,15 +348,21 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 
 	public void checkApple() throws IOException {
+		boolean appleEaten = false;
 		for (int i=0;i<players.size();i++) {
 			if ((players.get(i).x[0] == appleX) && (players.get(i).y[0] == appleY)) {
 				newApple();
+				appleEaten = true;
 				players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
 				players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
 			}
 		}
 
 		for (int i=0; i<players.size();i++){
+			if (!appleEaten){
+				players.get(i).getOut().writeObject(appleX);
+				players.get(i).getOut().writeObject(appleY);
+			}
 			System.out.println(players.get(i).getOut());
 			Integer apples = players.get(i).getApplesEaten();
 			Integer bodyparts = players.get(i).getBodyParts();

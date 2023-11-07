@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="minor tweaks.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="0265bc8b-41ec-4bad-8a58-88b3b2d96d9b" name="Changes" comment="gitignore tweaks">
       <change beforePath="$PROJECT_DIR$/src/GamePanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/GamePanelPlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/GamePanelPlayer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +118,7 @@
       <workItem from="1699352160069" duration="1505000" />
       <workItem from="1699355207588" duration="86000" />
       <workItem from="1699355319750" duration="47000" />
-      <workItem from="1699355397297" duration="2851000" />
+      <workItem from="1699355397297" duration="3359000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit">
       <created>1698916482702</created>
@@ -213,7 +211,21 @@
       <option name="project" value="LOCAL" />
       <updated>1699351148981</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="minor tweaks 2.">
+      <created>1699365572327</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1699365572327</updated>
+    </task>
+    <task id="LOCAL-00015" summary="gitignore tweaks">
+      <created>1699365788002</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1699365788002</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -250,6 +262,8 @@
     <MESSAGE value="Major Major advancements. Base game is SnakeGameOG, working to make distributed. It's giving a headache however, But I'm inching closer." />
     <MESSAGE value="ReDux, Major proper advancements, no handler, everything goes through the Server_ver2 and the new client is Client_ver2. &#10;Major headaches too." />
     <MESSAGE value="minor tweaks." />
-    <option name="LAST_COMMIT_MESSAGE" value="minor tweaks." />
+    <MESSAGE value="minor tweaks 2." />
+    <MESSAGE value="gitignore tweaks" />
+    <option name="LAST_COMMIT_MESSAGE" value="gitignore tweaks" />
   </component>
 </project>

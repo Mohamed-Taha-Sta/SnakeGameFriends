@@ -30,3 +30,4 @@ bin/
 
 ### ALSO ###
 *.xml
+.idea

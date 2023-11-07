@@ -250,6 +250,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				players.get(i).getOut().writeObject(players.get(j).getDirection());
 				System.out.println(players.get(i)+" sending to "+players.get(j));
 				players.get(i).getOut().flush();
+
 			}
 		}
 

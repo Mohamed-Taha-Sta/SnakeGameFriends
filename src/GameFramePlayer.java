@@ -7,9 +7,9 @@ import java.util.Vector;
 public class GameFramePlayer extends JFrame {
 
 
-	GameFramePlayer(Vector<Player> players, Player me, ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+	GameFramePlayer(Vector<Player> players, int my_id, ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 
-		this.add(new GamePanelPlayer(players, me,in ,out));
+		this.add(new GamePanelPlayer(players, my_id,in ,out));
 		System.out.println("were in gameFrame player and this is input" + in);
 		this.setTitle("Snake Player");
 

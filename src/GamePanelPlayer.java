@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
@@ -16,7 +17,7 @@ import java.util.Vector;
 public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	private final Vector<Player> players;
-	private final Player me;
+	private Player me;
 	int[] x;
 	int[] y;
 	private int numObstacles = 8;
@@ -75,7 +76,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		}
 	}
 
-	GamePanelPlayer(Vector<Player> players, Player me, ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
+	GamePanelPlayer(Vector<Player> players, int my_id, ObjectInputStream in, ObjectOutputStream out) throws IOException, ClassNotFoundException {
 
 		this.in = in;
 		this.out = out;
@@ -83,8 +84,17 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		random = new Random();
 
 		this.players = players;
+		System.out.println(players);
 
-		this.me = me;
+		for (int i=0;i<players.size();i++){
+			if (players.get(i).getId() == my_id)
+			{
+				this.me = players.get(i);
+			}
+		}
+
+
+		System.out.println(me);
 
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
@@ -212,7 +222,8 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 	}
 
 
-	public void sendMove() throws IOException {
+	public void sendMove() throws IOException, InterruptedException {
+
 		out.writeObject(me.getDirection());
 
 		for (int j=0; j<players.size();j++) {
@@ -346,9 +357,9 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			try {
 				sendMove();
 				ReceiveMove();
-				checkApple();
 				System.out.println("action performed client");
-			} catch (IOException | ClassNotFoundException ex) {
+				checkApple();
+			} catch (IOException | ClassNotFoundException | InterruptedException ex) {
 				throw new RuntimeException(ex);
 			}
 

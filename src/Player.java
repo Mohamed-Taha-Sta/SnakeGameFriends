@@ -14,6 +14,7 @@ public class Player implements Serializable {
     private boolean running = false;
     private boolean ready = false;
     private String name;
+    private int id;
     private Color startColor;
     private Color endColor;
 //    private Socket playerSocket;
@@ -54,14 +55,24 @@ public class Player implements Serializable {
         this.handlerPort = handlerPort;
     }
 
-    public Player(String name, ObjectInputStream in, ObjectOutputStream out) {
+    public Player(int id,String name, ObjectInputStream in, ObjectOutputStream out) {
         this.name = name;
         this.in = in;
         this.out = out;
+        this.id = id;
     }
 
-    public Player(String name) {
+    public Player(int id, String name) {
         this.name = name;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int[] getX() {
@@ -156,8 +167,8 @@ public class Player implements Serializable {
     @Override
     public String toString() {
         return "Player{" +
-                "name='" + name + '\'' +
-//                ", playerSocket=" + playerSocket +
+                "id=" + id + '\'' +
+                ", name='" + name +
                 '}';
     }
 }

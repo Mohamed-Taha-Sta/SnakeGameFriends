@@ -23,7 +23,7 @@ public class Client_ver2 {
         if (immediateResponse.isResponse()) {
             System.out.println("Client here 2");
 
-            Player me = (Player) in.readObject();
+            int my_id = (Integer) in.readObject();
             System.out.println("Client here 3");
 
             Integer playerNumber = (Integer) in.readObject();
@@ -35,7 +35,7 @@ public class Client_ver2 {
             System.out.println("Client here 4");
 
             System.out.println("client here");
-            new GameFramePlayer(players,me,in,out);
+            new GameFramePlayer(players,my_id,in,out);
 
         }else {
             System.out.println("I was not admitted");

@@ -50,11 +50,13 @@ public class GamePanel extends JPanel implements ActionListener{
 				if (i == 0){
 					players.get(i).setStartColor(new Color(98, 190, 155));
 					players.get(i).setEndColor(new Color(59, 146, 116));
+					System.out.println("player 1 init");
 				} else if (i == 1){
 					players.get(i).x[j] = SCREEN_WIDTH;
 					players.get(i).setDirection('L');
 					players.get(i).setStartColor(new Color(98, 155, 190));
 					players.get(i).setEndColor(new Color(59, 103, 146));
+					System.out.println("player 2 init");
 				} else if (i == 2) {
 					players.get(i).y[j] = SCREEN_HEIGHT-UNIT_SIZE;
 					players.get(i).setStartColor(new Color(164, 98, 190));
@@ -101,6 +103,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		for (int i = 0; i < numObstacles; i++) {
 			placeObstacle();
 		}
+
 
 		running = true;
 
@@ -206,10 +209,17 @@ public class GamePanel extends JPanel implements ActionListener{
 		} while (appleInObstacle() || !appleOutside());
 		//Send signal of coords of new apple
 
-		for (Player player:players){
-			player.getOut().writeObject(appleX);
-			player.getOut().writeObject(appleY);
+//		for (Player player:players){
+//			player.getOut().writeObject(appleX);
+//			player.getOut().writeObject(appleY);
+//		}
+//
+		for (int i=0; i<players.size();i++){
+			players.get(i).getOut().writeObject(appleX);
+			players.get(i).getOut().writeObject(appleY);
+			System.out.println(i);
 		}
+
 
 //		for (var entry : playersOut.entrySet()){
 //			entry.getValue().writeObject(appleX);
@@ -249,7 +259,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			for(int j = 0;j<players.size();j++){
 				players.get(i).getOut().writeObject(players.get(j).getDirection());
 				System.out.println(players.get(i)+" sending to "+players.get(j));
-				players.get(i).getOut().flush();
+
 
 			}
 		}
@@ -274,6 +284,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		//Receive Everyone's movement
 
 		for (int i = 0; i <players.size(); i++) {
+			System.out.println(players.get(i).getName());
 			players.get(i).setDirection((Character) players.get(i).getIn().readObject());
 		}
 
@@ -358,17 +369,17 @@ public class GamePanel extends JPanel implements ActionListener{
 			}
 		}
 
+		System.out.println("ended up");
 		for (int i=0; i<players.size();i++){
-			if (!appleEaten){
-				players.get(i).getOut().writeObject(appleX);
-				players.get(i).getOut().writeObject(appleY);
+			if (!appleEaten) {
+				for (int j = 0; j < players.size(); j++) {
+					players.get(j).getOut().writeObject(appleX);
+					players.get(j).getOut().writeObject(appleY);
+				}
 			}
-			System.out.println(players.get(i).getOut());
-			Integer apples = players.get(i).getApplesEaten();
-			Integer bodyparts = players.get(i).getBodyParts();
-			System.out.println(apples+" "+bodyparts);
-			players.get(i).getOut().writeObject(apples);
-			players.get(i).getOut().writeObject(bodyparts);
+			players.get(i).getOut().writeObject(players.get(i).getApplesEaten());
+			players.get(i).getOut().writeObject(players.get(i).getBodyParts());
+			System.out.println("ended end");
 		}
 
 //		Map<Socket, List<Integer>> playerStats = new HashMap<>();
@@ -478,7 +489,9 @@ public class GamePanel extends JPanel implements ActionListener{
 		if(running) {
 			try {
 
+				System.out.println("before anything action related ");
 				receiveMove();
+				System.out.println("after receive move");
 				sendMove();
 				checkApple();
 				checkCollisions();

@@ -9,7 +9,7 @@ public class GameFrame extends JFrame {
 
 		this.add(new GamePanel(players));
 
-		this.setTitle("Snake");
+		this.setTitle("Snake Server");
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

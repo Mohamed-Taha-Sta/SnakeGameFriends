@@ -11,7 +11,7 @@ public class GameFramePlayer extends JFrame {
 
 		this.add(new GamePanelPlayer(players, me,in ,out));
 		System.out.println("were in gameFrame player and this is input" + in);
-		this.setTitle("Snake");
+		this.setTitle("Snake Player");
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 public class GameFramePlayer extends JFrame {
 
@@ -11,7 +12,8 @@ public class GameFramePlayer extends JFrame {
 
 		this.add(new GamePanelPlayer(players, my_id,in ,out));
 		System.out.println("were in gameFrame player and this is input" + in);
-		this.setTitle("Snake Player");
+//		this.setTitle("Snake Player: "+players.stream().filter(player -> player.getId() == my_id).findFirst().map(Player::getName).orElse(""));
+		this.setTitle("Snake Player: "+players.stream().filter(player -> player.getId() == my_id).findFirst().map(Player::toString));
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

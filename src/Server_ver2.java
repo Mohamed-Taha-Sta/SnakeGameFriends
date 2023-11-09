@@ -13,7 +13,7 @@ public class Server_ver2 {
         Vector<Player> playersPlayerSided = new Vector<>();
         boolean launchGame = false;
         System.out.println("Snake Server Online");
-        int playerNumber = 2;
+        int playerNumber = 3;
         int i = 0;
         while(true) {
             // Check if all the players are ready, if so begin match,

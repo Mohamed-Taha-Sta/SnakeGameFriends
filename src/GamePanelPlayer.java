@@ -226,6 +226,14 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 		out.writeObject(me.getDirection());
 
+	}
+
+	public void ReceiveMove() throws IOException, ClassNotFoundException {
+
+		for (int i = 0; i<players.size();i++){
+			players.get(i).setDirection((Character) in.readObject());
+		}
+
 		for (int j=0; j<players.size();j++) {
 			int prevX = players.get(j).x[0];
 			int prevY = players.get(j).y[0];
@@ -289,22 +297,11 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			}
 		}
 
-
-
-	}
-
-	public void ReceiveMove() throws IOException, ClassNotFoundException {
-
-		for (int i = 0; i<players.size();i++){
-			players.get(i).setDirection((Character) in.readObject());
-		}
-
-
 	}
 	public void checkApple() throws IOException, ClassNotFoundException {
 
-		newApple();
 		System.out.println("hello apple stuck here");
+		newApple();
 		for(int i = 0; i<players.size();i++){
 			players.get(i).setApplesEaten((Integer) in.readObject());
 			players.get(i).setBodyParts((Integer) in.readObject());
@@ -357,7 +354,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			try {
 				sendMove();
 				ReceiveMove();
-				System.out.println("action performed client");
 				checkApple();
 			} catch (IOException | ClassNotFoundException | InterruptedException ex) {
 				throw new RuntimeException(ex);

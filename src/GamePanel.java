@@ -3,14 +3,13 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.*;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GamePanel extends JPanel implements ActionListener{
 
@@ -99,6 +98,12 @@ public class GamePanel extends JPanel implements ActionListener{
 		init_players();
 
 		newApple();
+
+		for (int i=0; i<players.size();i++){
+			players.get(i).getOut().writeObject(appleX);
+			players.get(i).getOut().writeObject(appleY);
+			System.out.println(i);
+		}
 
 		for (int i = 0; i < numObstacles; i++) {
 			placeObstacle();
@@ -207,24 +212,8 @@ public class GamePanel extends JPanel implements ActionListener{
 			appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
 			appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
 		} while (appleInObstacle() || !appleOutside());
+
 		//Send signal of coords of new apple
-
-//		for (Player player:players){
-//			player.getOut().writeObject(appleX);
-//			player.getOut().writeObject(appleY);
-//		}
-//
-		for (int i=0; i<players.size();i++){
-			players.get(i).getOut().writeObject(appleX);
-			players.get(i).getOut().writeObject(appleY);
-			System.out.println(i);
-		}
-
-
-//		for (var entry : playersOut.entrySet()){
-//			entry.getValue().writeObject(appleX);
-//			entry.getValue().writeObject(appleY);
-//		}
 
 	}
 
@@ -259,8 +248,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			for(int j = 0;j<players.size();j++){
 				players.get(i).getOut().writeObject(players.get(j).getDirection());
 				System.out.println(players.get(i)+" sending to "+players.get(j));
-
-
 			}
 		}
 
@@ -354,33 +341,36 @@ public class GamePanel extends JPanel implements ActionListener{
 				prevY = tempY;
 			}
 		}
-		
-
 	}
+
 
 	public void checkApple() throws IOException {
 		boolean appleEaten = false;
 		for (int i=0;i<players.size();i++) {
-			if ((players.get(i).x[0] == appleX) && (players.get(i).y[0] == appleY)) {
-				newApple();
-				appleEaten = true;
-				players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
-				players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
+
+				if ((players.get(i).x[0] == appleX) && (players.get(i).y[0] == appleY)) {
+					newApple();
+					appleEaten = true;
+					players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
+					players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
+				}
+
+
+			players.get(i).getOut().writeObject(appleX);
+			players.get(i).getOut().writeObject(appleY);
+
+
+			for (int j=0;j<players.size();j++) {
+				players.get(i).getOut().writeObject(players.get(j).getApplesEaten());
+				players.get(i).getOut().writeObject(players.get(j).getBodyParts());
 			}
+
 		}
 
-		System.out.println("ended up");
-		for (int i=0; i<players.size();i++){
-			if (!appleEaten) {
-				for (int j = 0; j < players.size(); j++) {
-					players.get(j).getOut().writeObject(appleX);
-					players.get(j).getOut().writeObject(appleY);
-				}
-			}
-			players.get(i).getOut().writeObject(players.get(i).getApplesEaten());
-			players.get(i).getOut().writeObject(players.get(i).getBodyParts());
-			System.out.println("ended end");
-		}
+	}
+
+
+
 
 //		Map<Socket, List<Integer>> playerStats = new HashMap<>();
 //
@@ -391,7 +381,7 @@ public class GamePanel extends JPanel implements ActionListener{
 //			entry.getValue().writeObject(new Stats(playerStats));
 //		}
 
-	}
+
 
 	public void checkCollisions() {
 
@@ -491,7 +481,6 @@ public class GamePanel extends JPanel implements ActionListener{
 
 				System.out.println("before anything action related ");
 				receiveMove();
-				System.out.println("after receive move");
 				sendMove();
 				checkApple();
 				checkCollisions();

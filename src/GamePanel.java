@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -380,39 +381,61 @@ public class GamePanel extends JPanel implements ActionListener{
 //		for(var entry : playersOut.entrySet()){
 //			entry.getValue().writeObject(new Stats(playerStats));
 //		}
-
-
-
 	public void checkCollisions() {
 
-		// Add collisions between players
+		List<Player> playersToRemove = new ArrayList<>();
 
-		for (int j = 0; j < players.size(); j++) {
+		// Add collisions between players
+		for (Player player : players) {
 
 			//checks if head collides with body
-
-			for (int i = players.get(j).getBodyParts(); i > 0; i--) {
-
-				if ((players.get(j).x[0] == players.get(j).x[i]) && (players.get(j).y[0] == players.get(j).y[i])) {
-					players.get(j).setRunning(false);
+			for (int i = player.getBodyParts(); i > 0; i--) {
+				if ((player.x[0] == player.x[i]) && (player.y[0] == player.y[i])) {
+					player.setRunning(false);
+					playersToRemove.add(player);
 				}
-
 			}
 
 			//Check if head touches obstacle
-
-			Rectangle snakeHead = new Rectangle(players.get(j).x[0], players.get(j).y[0], UNIT_SIZE, UNIT_SIZE);
+			Rectangle snakeHead = new Rectangle(player.x[0], player.y[0], UNIT_SIZE, UNIT_SIZE);
 
 			for (Rectangle obstacle : obstacles) {
 				if (obstacle.intersects(snakeHead)) {
-					players.get(j).setRunning(false);
+					player.setRunning(false);
+					playersToRemove.add(player);
 				}
 			}
 
+			// Check if head collides with other players
+			for (Player otherPlayer : players) {
+				if (otherPlayer != player) {
+					Rectangle otherPlayerHead = new Rectangle(otherPlayer.x[0], otherPlayer.y[0], UNIT_SIZE, UNIT_SIZE);
+					if (snakeHead.intersects(otherPlayerHead)) {
+						player.setRunning(false);
+						otherPlayer.setRunning(false);
+						playersToRemove.add(player);
+						playersToRemove.add(otherPlayer);
+					}
+
+					// Check if head collides with the body of other players
+					for (int i = 1; i < otherPlayer.getBodyParts(); i++) {
+						Rectangle otherPlayerBodyPart = new Rectangle(otherPlayer.x[i], otherPlayer.y[i], UNIT_SIZE, UNIT_SIZE);
+						if (snakeHead.intersects(otherPlayerBodyPart)) {
+							player.setRunning(false);
+							playersToRemove.add(player);
+						}
+					}
+				}
+			}
 		}
+
+		// Send to Dead players signal to die
+
+		players.removeAll(playersToRemove);
+
 		boolean stillRunning = false;
-		for (int i = 0; i < players.size(); i++) {
-			if (players.get(i).isRunning())
+		for (Player player : players) {
+			if (player.isRunning())
 				stillRunning = true;
 		}
 
@@ -420,12 +443,21 @@ public class GamePanel extends JPanel implements ActionListener{
 			running = false;
 			timer.stop();
 		}
-
-		// Delete player
-		// Send collision update
-		// Send Player Update
-
 	}
+
+	private void playersAlive() throws IOException {
+
+		for (Player player : players){
+			player.getOut().writeObject(players.size());
+		}
+
+		for (Player player : players){
+			for (Player player1 : players){
+				player.getOut().writeObject(player1.getId());
+			}
+		}
+	}
+
 
 	public void gameOver(Graphics g) {
 
@@ -484,6 +516,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				sendMove();
 				checkApple();
 				checkCollisions();
+				playersAlive();
 
 			} catch (IOException | ClassNotFoundException ex) {
 				throw new RuntimeException(ex);
@@ -493,6 +526,8 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 		repaint();
 	}
+
+
 
 
 	public void placeObstacle() {

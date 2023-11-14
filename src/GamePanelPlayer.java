@@ -345,8 +345,21 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		FontMetrics metrics4 = getFontMetrics(g.getFont());
 		g.drawString("Press 'ESC' to Quit", (SCREEN_WIDTH - metrics4.stringWidth("Press 'ESC' to Quit"))/2, SCREEN_HEIGHT/2+4*UNIT_SIZE);
 
-
 	}
+
+	private void playersAlive() throws IOException, ClassNotFoundException {
+
+		java.util.List<Integer> alive = new ArrayList<>(); // list of Ids that are alive
+
+		int numberPlayers = (Integer)in.readObject();
+
+		for (int i = 0; i < numberPlayers; i++) {
+			alive.add((Integer) in.readObject());
+		}
+
+		players.removeIf(player -> !alive.contains(player.getId()));
+	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -355,6 +368,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 				sendMove();
 				ReceiveMove();
 				checkApple();
+				playersAlive();
 			} catch (IOException | ClassNotFoundException | InterruptedException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -365,7 +379,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		repaint();
 	}
 
-	
 
 	public class MyKeyAdapter extends KeyAdapter{
 

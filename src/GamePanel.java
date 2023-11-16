@@ -5,42 +5,27 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class GamePanel extends JPanel implements ActionListener{
 
 	private final Vector<Player> players;
-	int[] x;
-	int[] y;
 	private int numObstacles = 8;
 	static final int SCREEN_WIDTH = 1300;
-
 	static final int SCREEN_HEIGHT = 740;
-
 	static final int UNIT_SIZE = 20;
-
 	static final int GAME_UNITS = (SCREEN_WIDTH*SCREEN_HEIGHT)/(UNIT_SIZE*UNIT_SIZE);
-
 	static final int DELAY = 70;
-
 	int level = 1;
-	int bodyParts = 4;
-	int applesEaten;
 	int appleX;
 	int appleY;
-	char direction = 'R';
 	boolean running = false;
 	boolean obstaclesPainted = false;
 	private java.util.List<Rectangle> obstacles = new ArrayList<>();
 	private java.util.List<Player> playersToRemove = new ArrayList<>();
 	private final Map<Integer,Integer> playersScore = new HashMap<>();
 	private final Map<Integer,String> playersNames = new HashMap<>();
-
-
-	Timer timer;
-
-	Random random;
+	private Timer timer;
+	private final Random random;
 
 	public void init_players(){
 		for(int i=0;i<players.size();i++){
@@ -104,10 +89,19 @@ public class GamePanel extends JPanel implements ActionListener{
 			players.get(i).getOut().writeObject(appleY);
 		}
 
+
 		for (int i = 0; i < numObstacles; i++) {
 			placeObstacle();
 		}
 
+
+
+		for (Player player : players) {
+			player.getOut().writeObject(obstacles.size());
+			for (Rectangle obstacle : obstacles) {
+				player.getOut().writeObject(obstacle);
+			}
+		}
 
 		running = true;
 
@@ -130,12 +124,8 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 
 	public void draw(Graphics g) {
-
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
-
 		if(running) {
-
 			g.setColor(new Color(217,84,60));
 			g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
@@ -166,22 +156,18 @@ public class GamePanel extends JPanel implements ActionListener{
 				int playerId = entry.getKey();
 				int score = entry.getValue();
 				String playerName = playersNames.get(playerId);
-				System.out.println("Player Name: " + playerName + ", Score: " + score);
 				g.drawString(playerName+" : "+score, UNIT_SIZE , UNIT_SIZE * (playerId-1)+ 2*UNIT_SIZE);
-
 			}
-
 		}
 		else {
 			gameOver(g);
 		}
-
 	}
 
 	public void newApple() throws IOException {
 		do {
-			appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
-			appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
+			appleX = random.nextInt(SCREEN_WIDTH/UNIT_SIZE) * UNIT_SIZE;
+			appleY = random.nextInt(SCREEN_HEIGHT/UNIT_SIZE) * UNIT_SIZE;
 		} while (appleInObstacle() || !appleOutside());
 
 	}
@@ -207,7 +193,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		for (int i=0; i<players.size();i++){
 			for(int j = 0;j<players.size();j++){
 				players.get(i).getOut().writeObject(players.get(j).getDirection());
-				System.out.println(players.get(i)+" sending to "+players.get(j));
 			}
 		}
 	}
@@ -218,7 +203,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		//Receive Everyone's movement
 
 		for (int i = 0; i <players.size(); i++) {
-			System.out.println(players.get(i).getName());
 			players.get(i).setDirection((Character) players.get(i).getIn().readObject());
 		}
 
@@ -297,7 +281,7 @@ public class GamePanel extends JPanel implements ActionListener{
 					appleEaten = true;
 					players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
 					players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
-					playersScore.put(i+1, playersScore.getOrDefault(i+1, 0) + 1);
+					playersScore.put(players.get(i).getId(), playersScore.getOrDefault(players.get(i).getId(), 0) + 1);
 				}
 
 			players.get(i).getOut().writeObject(appleX);
@@ -359,9 +343,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			}
 		}
 
-		// Send to Dead players signal to die
-
-
 		boolean stillRunning = false;
 		for (Player player : players) {
 			if (player.isRunning())
@@ -375,11 +356,6 @@ public class GamePanel extends JPanel implements ActionListener{
 	}
 
 	private void playersDead() throws IOException {
-//		for(Player player: players){
-//			player.getOut().writeObject(playersToRemove.size());
-//		}
-		System.out.println("playersDead playersToRemove"+playersToRemove);
-		System.out.println("playersDead players"+players);
 		for(Player player : players){
 			if(playersToRemove.stream().map(Player::getId).toList().contains(player.getId())){
 				player.getOut().writeObject(true);
@@ -402,7 +378,6 @@ public class GamePanel extends JPanel implements ActionListener{
 				player.getOut().writeObject(player1.getId());
 			}
 		}
-		System.out.println(players);
 	}
 
 
@@ -434,11 +409,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
 		g.drawString("Game Over", (SCREEN_WIDTH - metrics2.stringWidth("Game Over"))/2, SCREEN_HEIGHT/2);
 
-		//Restart text
-
-		g.setFont( new Font("Roboto",Font.PLAIN, 20));
-		FontMetrics metrics3 = getFontMetrics(g.getFont());
-		g.drawString("Press 'R' to Restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to Restart"))/2, SCREEN_HEIGHT/2+2*UNIT_SIZE);
 
 		//Escape Text
 
@@ -467,63 +437,22 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 		repaint();
 	}
+
 	public void placeObstacle() {
-		// Add obstacles for the current level
-		if (level == 1) {
-			obstacles.add(new Rectangle(100, 260, 100, 20));
-			obstacles.add(new Rectangle(300, 260, 100, 20));
-			obstacles.add(new Rectangle(500, 260, 100, 20));
-			obstacles.add(new Rectangle(200, 140, 100, 20));
-			obstacles.add(new Rectangle(400, 140, 100, 20));
-			obstacles.add(new Rectangle(300, 40, 100, 20));
-			obstacles.add(new Rectangle(100, 340, 40, 20));
-			obstacles.add(new Rectangle(500, 340, 40, 20));
-			obstacles.add(new Rectangle(260, 40, 20, 20));
-			obstacles.add(new Rectangle(460, 20, 20, 20));
-			obstacles.add(new Rectangle(100, 620, 100, 20));
-			obstacles.add(new Rectangle(300, 620, 100, 20));
-			obstacles.add(new Rectangle(500, 680, 100, 20));
-			obstacles.add(new Rectangle(200, 580, 100, 20));
-			obstacles.add(new Rectangle(400, 560, 100, 20));
-			obstacles.add(new Rectangle(300, 460, 100, 20));
-			obstacles.add(new Rectangle(100, 760, 20, 20));
-			obstacles.add(new Rectangle(500, 780, 20, 120));
-			obstacles.add(new Rectangle(260, 480, 20, 20));
-			obstacles.add(new Rectangle(460, 480, 20, 20));
-			obstacles.add(new Rectangle(600, 260, 100, 20));
-			obstacles.add(new Rectangle(900, 260, 100, 20));
-			obstacles.add(new Rectangle(1000, 260, 100, 20));
-			obstacles.add(new Rectangle(800, 140, 100, 20));
-			obstacles.add(new Rectangle(800, 140, 100, 120));
-			obstacles.add(new Rectangle(600, 40, 100, 20));
-			obstacles.add(new Rectangle(700, 340, 40, 20));
-			obstacles.add(new Rectangle(1000, 340, 40, 20));
-			obstacles.add(new Rectangle(560, 40, 20, 20));
-			obstacles.add(new Rectangle(760, 20, 20, 20));
-			obstacles.add(new Rectangle(1000, 620, 100, 20));
-			obstacles.add(new Rectangle(700, 620, 100, 20));
-			obstacles.add(new Rectangle(1000, 680, 100, 20));
-			obstacles.add(new Rectangle(700, 580, 100, 20));
-			obstacles.add(new Rectangle(600, 560, 100, 20));
-			obstacles.add(new Rectangle(1000, 460, 20, 80));
-			obstacles.add(new Rectangle(800, 760, 20, 20));
-			obstacles.add(new Rectangle(600, 780, 20, 20));
-			obstacles.add(new Rectangle(760, 480, 20, 80));
-			obstacles.add(new Rectangle(960, 480, 20, 60));
+		Random rand = new Random();
+		obstacles.clear(); // Clear the previous obstacles
+		int maxObstacles = 40; // Adjust this value to control the number of obstacles
 
+		for (int i = 0; i < maxObstacles; i++) {
+			int x = rand.nextInt(2,SCREEN_WIDTH/UNIT_SIZE-2); // Random x position
+			int y = rand.nextInt(2,SCREEN_HEIGHT/UNIT_SIZE-2); // Random y position
+			int width = UNIT_SIZE * (rand.nextInt(2) + 1); // Random width (between UNIT_SIZE and 5*UNIT_SIZE)
+			int height = UNIT_SIZE * (rand.nextInt(2) + 1); // Random height (between UNIT_SIZE and 5*UNIT_SIZE)
 
-		} else if (level == 2) {
-			obstacles.add(new Rectangle(100, 100, 50, 50));
-			obstacles.add(new Rectangle(200, 200, 50, 50));
-		} else if (level == 3) {
-			obstacles.add(new Rectangle(100, 100, 50, 50));
-			obstacles.add(new Rectangle(200, 200, 50, 50));
-			obstacles.add(new Rectangle(300, 300, 50, 50));
-		} else if (level == 4) {
-			// Add more obstacles for level 4
-		} else if (level == 5) {
-			// Add even more obstacles for level 5
+			Rectangle obstacle = new Rectangle(x*UNIT_SIZE, y*UNIT_SIZE, width, height);
+			obstacles.add(obstacle);
 		}
 	}
+
 
 }

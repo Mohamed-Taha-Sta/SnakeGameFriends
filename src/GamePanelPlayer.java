@@ -69,7 +69,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 				}
 			}
 			players.get(i).setApplesEaten(0);
-			players.get(i).setBodyParts(6);
+			players.get(i).setBodyParts(4);
 			players.get(i).setRunning(true);
 		}
 	}
@@ -82,7 +82,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		random = new Random();
 
 		this.players = players;
-		System.out.println(players);
 
 		for (int i=0;i<players.size();i++){
 			if (players.get(i).getId() == my_id)
@@ -118,9 +117,18 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 		newApple();
 
-		for (int i = 0; i < numObstacles; i++) {
-			placeObstacle();
+		int obsNumber = (Integer) in.readObject();
+
+		for (int i = 0; i<obsNumber; i++){
+			obstacles.add((Rectangle)in.readObject());
 		}
+
+//
+//		for (int i = 0; i < numObstacles; i++) {
+//			placeObstacle();
+//		}
+
+
 
 		running = true;
 
@@ -179,7 +187,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 				int playerId = entry.getKey();
 				int score = entry.getValue();
 				String playerName = playersNames.get(playerId);
-				System.out.println("Player Name: " + playerName + ", Score: " + score);
 				g.drawString(playerName+" : "+score, UNIT_SIZE , UNIT_SIZE * (playerId-1)+ 2*UNIT_SIZE);
 
 			}
@@ -274,7 +281,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 	}
 	public void checkApple() throws IOException, ClassNotFoundException {
 
-		System.out.println("hello apple stuck here");
 		newApple();
 		for(int i = 0; i < players.size(); i++){
 			int oldApplesEaten = players.get(i).getApplesEaten();
@@ -284,11 +290,9 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			players.get(i).setBodyParts((Integer) in.readObject());
 
 			if (players.get(i).getApplesEaten() != oldApplesEaten || players.get(i).getBodyParts() != oldBodyParts) {
-				playersScore.put(i+1, playersScore.getOrDefault(i+1, 0) + 1);
+				playersScore.put(players.get(i).getId(), playersScore.getOrDefault(players.get(i).getId(), 0) + 1);
 			}
 		}
-
-		System.out.println("Apple unstuck");
 
 	}
 
@@ -339,20 +343,11 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			alive.add((Integer) in.readObject());
 		}
 
-		System.out.println(alive);
-		System.out.println(me.getId());
-
-//		if (!alive.contains(me.getId())){
-//			me.setRunning(false);
-//			timer.stop();
-//		}
-
 		players.removeIf(player -> !alive.contains(player.getId()));
 
 	}
 
 	private boolean playersDead() throws IOException, ClassNotFoundException {
-//		int numberDeadPlayers = (Integer) in.readObject();
 		boolean AmIDead = (Boolean) in.readObject();
 		if (AmIDead){
 			me.setRunning(false);
@@ -364,7 +359,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("before going in me is "+me.isRunning());
 		if(me.isRunning()) {
 			try {
 				sendMove();
@@ -372,10 +366,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 				checkApple();
 				boolean deadplayer = playersDead();
 				if (!deadplayer) playersAlive();
-				System.out.println(me.getName()+" My state is that im "+me.isRunning());
-				for(Player player : players){
-					System.out.println(player.getName()+" "+player.isRunning());
-				}
 			} catch (IOException | ClassNotFoundException | InterruptedException ex) {
 				throw new RuntimeException(ex);
 			}
@@ -432,16 +422,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 				}
 
-				break;
-			case KeyEvent.VK_R:
-
-				if (!me.isRunning()) {
-					try {
-						startGame();
-					} catch (IOException | ClassNotFoundException ex) {
-						throw new RuntimeException(ex);
-					}
-				}
 				break;
 
 			case KeyEvent.VK_ESCAPE:

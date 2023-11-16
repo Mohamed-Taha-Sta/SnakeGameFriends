@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,12 +8,7 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Random;
-import java.util.Vector;
+import java.util.*;
 
 public class GamePanelPlayer extends JPanel implements ActionListener{
 
@@ -42,6 +38,8 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 	private java.util.List<Rectangle> obstacles = new ArrayList<>();
 	private final ObjectOutputStream out;
 	private final ObjectInputStream in;
+	private final Map<Integer,Integer> playersScore = new HashMap<>();
+	private final Map<Integer,String> playersNames = new HashMap<>();
 
 	Timer timer;
 
@@ -94,7 +92,13 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		}
 
 
-		System.out.println(me);
+		for (Player player : players) {
+			playersScore.put(player.getId(),0);
+		}
+
+		for (Player player : players) {
+			playersNames.put(player.getId(),player.getName());
+		}
 
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
@@ -136,45 +140,11 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			g.setColor(Color.WHITE);
 			g.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 		}
-
-//		paintObstacles(g);
-
-	}
-
-	public void paintObstacles(Graphics g){
-
-		//Failed attempt at procedural generation:
-//		g.setColor(Color.WHITE);
-//		for (int i = 0; i < numObstacles; i++) {
-//			g.fillRect(obstacleX[i], obstacleY[i], UNIT_SIZE, UNIT_SIZE);
-//			int LENGTH_OF_OBSTACLE = random.nextInt(UNIT_SIZE*10)+UNIT_SIZE;
-//			int DIRECTION_OF_OBSCTACLE = random.nextInt(8);
-//			for (int j = 0; j < LENGTH_OF_OBSTACLE; j=j+UNIT_SIZE) {
-//				if (DIRECTION_OF_OBSCTACLE == 0){
-//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 1) {
-//					g.fillRect(obstacleX[i], obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 2) {
-//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 3) {
-//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i], UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 4) {
-//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 5) {
-//					g.fillRect(obstacleX[i], obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 6) {
-//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else {
-//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i], UNIT_SIZE, UNIT_SIZE);
-//				}
-//			}
-//		}
 	}
 
 	public void draw(Graphics g) {
 
 		((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
 
 		if(me.isRunning()) {
 
@@ -205,10 +175,14 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			FontMetrics metrics = getFontMetrics(g.getFont());
 			g.drawString("ScoreBoard: ", 0, g.getFont().getSize());
 
-			for (int i=0; i<players.size();i++){
-				g.drawString(players.get(i).getName()+" : "+players.get(i).getApplesEaten(), UNIT_SIZE , UNIT_SIZE * (i)+ 2*UNIT_SIZE);
-			}
+			for (Map.Entry<Integer, Integer> entry : playersScore.entrySet()) {
+				int playerId = entry.getKey();
+				int score = entry.getValue();
+				String playerName = playersNames.get(playerId);
+				System.out.println("Player Name: " + playerName + ", Score: " + score);
+				g.drawString(playerName+" : "+score, UNIT_SIZE , UNIT_SIZE * (playerId-1)+ 2*UNIT_SIZE);
 
+			}
 		}
 		else {
 			gameOver(g);
@@ -302,10 +276,18 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 		System.out.println("hello apple stuck here");
 		newApple();
-		for(int i = 0; i<players.size();i++){
+		for(int i = 0; i < players.size(); i++){
+			int oldApplesEaten = players.get(i).getApplesEaten();
+			int oldBodyParts = players.get(i).getBodyParts();
+
 			players.get(i).setApplesEaten((Integer) in.readObject());
 			players.get(i).setBodyParts((Integer) in.readObject());
+
+			if (players.get(i).getApplesEaten() != oldApplesEaten || players.get(i).getBodyParts() != oldBodyParts) {
+				playersScore.put(i+1, playersScore.getOrDefault(i+1, 0) + 1);
+			}
 		}
+
 		System.out.println("Apple unstuck");
 
 	}
@@ -333,11 +315,11 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 		FontMetrics metrics2 = getFontMetrics(g.getFont());
 		g.drawString("Game Over "+me.getName(), (SCREEN_WIDTH - metrics2.stringWidth("Game Over "+me.getName()))/2, SCREEN_HEIGHT/2);
 
-		//Restart text
+		//Better Luck text
 
 		g.setFont( new Font("Roboto",Font.PLAIN, 20));
 		FontMetrics metrics3 = getFontMetrics(g.getFont());
-		g.drawString("Press 'R' to Restart", (SCREEN_WIDTH - metrics3.stringWidth("Press 'R' to Restart"))/2, SCREEN_HEIGHT/2+2*UNIT_SIZE);
+		g.drawString("Better Luck Next Time!", (SCREEN_WIDTH - metrics3.stringWidth("Better Luck Next Time!"))/2, SCREEN_HEIGHT/2+2*UNIT_SIZE);
 
 		//Escape Text
 
@@ -357,27 +339,51 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			alive.add((Integer) in.readObject());
 		}
 
+		System.out.println(alive);
+		System.out.println(me.getId());
+
+//		if (!alive.contains(me.getId())){
+//			me.setRunning(false);
+//			timer.stop();
+//		}
+
 		players.removeIf(player -> !alive.contains(player.getId()));
+
 	}
 
+	private boolean playersDead() throws IOException, ClassNotFoundException {
+//		int numberDeadPlayers = (Integer) in.readObject();
+		boolean AmIDead = (Boolean) in.readObject();
+		if (AmIDead){
+			me.setRunning(false);
+			timer.stop();
+			return true;
+		}
+		return false;
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		System.out.println("before going in me is "+me.isRunning());
 		if(me.isRunning()) {
 			try {
 				sendMove();
 				ReceiveMove();
 				checkApple();
-				playersAlive();
+				boolean deadplayer = playersDead();
+				if (!deadplayer) playersAlive();
+				System.out.println(me.getName()+" My state is that im "+me.isRunning());
+				for(Player player : players){
+					System.out.println(player.getName()+" "+player.isRunning());
+				}
 			} catch (IOException | ClassNotFoundException | InterruptedException ex) {
 				throw new RuntimeException(ex);
 			}
-
 		}
-
-
 		repaint();
 	}
+
+
 
 
 	public class MyKeyAdapter extends KeyAdapter{

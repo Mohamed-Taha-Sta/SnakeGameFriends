@@ -4,13 +4,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class GamePanel extends JPanel implements ActionListener{
 
@@ -37,8 +33,10 @@ public class GamePanel extends JPanel implements ActionListener{
 	boolean running = false;
 	boolean obstaclesPainted = false;
 	private java.util.List<Rectangle> obstacles = new ArrayList<>();
-	Map<Player, ObjectInputStream> playersIn = new HashMap<>();
-	Map<Player, ObjectOutputStream> playersOut = new HashMap<>();
+	private java.util.List<Player> playersToRemove = new ArrayList<>();
+	private final Map<Integer,Integer> playersScore = new HashMap<>();
+	private final Map<Integer,String> playersNames = new HashMap<>();
+
 
 	Timer timer;
 
@@ -50,13 +48,11 @@ public class GamePanel extends JPanel implements ActionListener{
 				if (i == 0){
 					players.get(i).setStartColor(new Color(98, 190, 155));
 					players.get(i).setEndColor(new Color(59, 146, 116));
-					System.out.println("player 1 init");
 				} else if (i == 1){
 					players.get(i).x[j] = SCREEN_WIDTH;
 					players.get(i).setDirection('L');
 					players.get(i).setStartColor(new Color(98, 155, 190));
 					players.get(i).setEndColor(new Color(59, 103, 146));
-					System.out.println("player 2 init");
 				} else if (i == 2) {
 					players.get(i).y[j] = SCREEN_HEIGHT-UNIT_SIZE;
 					players.get(i).setStartColor(new Color(164, 98, 190));
@@ -81,17 +77,20 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		this.players = players;
 
+		for (Player player : players) {
+			playersScore.put(player.getId(),0);
+		}
+
+		for (Player player : players) {
+			playersNames.put(player.getId(),player.getName());
+		}
+
+
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
 		this.setFocusable(true);
 
 		startGame();
-
-//		for(Player player : players){
-//			playersIn.put(player,new ObjectInputStream(player.getHandlerPlayerSocket().getInputStream()));
-//			playersOut.put(player,new ObjectOutputStream(player.getHandlerPlayerSocket().getOutputStream()));
-//		}
-
 	}
 
 	public void startGame() throws IOException {
@@ -103,7 +102,6 @@ public class GamePanel extends JPanel implements ActionListener{
 		for (int i=0; i<players.size();i++){
 			players.get(i).getOut().writeObject(appleX);
 			players.get(i).getOut().writeObject(appleY);
-			System.out.println(i);
 		}
 
 		for (int i = 0; i < numObstacles; i++) {
@@ -122,46 +120,13 @@ public class GamePanel extends JPanel implements ActionListener{
 	public void paintComponent(Graphics g) {
 
 		super.paintComponent(g);
-		setBackground(new Color(46,48,48));
+		setBackground(new Color(46, 48, 48));
 		draw(g);
 
 		for (Rectangle obstacle : obstacles) {
 			g.setColor(Color.WHITE);
 			g.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 		}
-
-//		paintObstacles(g);
-
-	}
-
-	public void paintObstacles(Graphics g){
-
-		//Failed attempt at procedural generation:
-//		g.setColor(Color.WHITE);
-//		for (int i = 0; i < numObstacles; i++) {
-//			g.fillRect(obstacleX[i], obstacleY[i], UNIT_SIZE, UNIT_SIZE);
-//			int LENGTH_OF_OBSTACLE = random.nextInt(UNIT_SIZE*10)+UNIT_SIZE;
-//			int DIRECTION_OF_OBSCTACLE = random.nextInt(8);
-//			for (int j = 0; j < LENGTH_OF_OBSTACLE; j=j+UNIT_SIZE) {
-//				if (DIRECTION_OF_OBSCTACLE == 0){
-//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 1) {
-//					g.fillRect(obstacleX[i], obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 2) {
-//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i]+UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 3) {
-//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i], UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 4) {
-//					g.fillRect(obstacleX[i]+UNIT_SIZE, obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 5) {
-//					g.fillRect(obstacleX[i], obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else if (DIRECTION_OF_OBSCTACLE == 6) {
-//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i]-UNIT_SIZE, UNIT_SIZE, UNIT_SIZE);
-//				} else {
-//					g.fillRect(obstacleX[i]-UNIT_SIZE, obstacleY[i], UNIT_SIZE, UNIT_SIZE);
-//				}
-//			}
-//		}
 	}
 
 	public void draw(Graphics g) {
@@ -197,8 +162,13 @@ public class GamePanel extends JPanel implements ActionListener{
 			FontMetrics metrics = getFontMetrics(g.getFont());
 			g.drawString("ScoreBoard: ", 0, g.getFont().getSize());
 
-			for (int i=0; i<players.size();i++){
-				g.drawString(players.get(i).getName()+" : "+players.get(i).getApplesEaten(), UNIT_SIZE , UNIT_SIZE * (i)+ 2*UNIT_SIZE);
+			for (Map.Entry<Integer, Integer> entry : playersScore.entrySet()) {
+				int playerId = entry.getKey();
+				int score = entry.getValue();
+				String playerName = playersNames.get(playerId);
+				System.out.println("Player Name: " + playerName + ", Score: " + score);
+				g.drawString(playerName+" : "+score, UNIT_SIZE , UNIT_SIZE * (playerId-1)+ 2*UNIT_SIZE);
+
 			}
 
 		}
@@ -213,8 +183,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			appleX = random.nextInt((int)(SCREEN_WIDTH/UNIT_SIZE)) * UNIT_SIZE;
 			appleY = random.nextInt((int)(SCREEN_HEIGHT/UNIT_SIZE)) * UNIT_SIZE;
 		} while (appleInObstacle() || !appleOutside());
-
-		//Send signal of coords of new apple
 
 	}
 
@@ -235,35 +203,13 @@ public class GamePanel extends JPanel implements ActionListener{
 
 
 	public void sendMove() throws IOException {
-
 		//Send Everyone's movement
-
-//		for (Player player : players){
-//			for (Player player1 : players){
-//				player.getOut().writeObject(player1.getDirection());
-//				System.out.println(player+" sending to "+player1);
-//			}
-//		}
-
 		for (int i=0; i<players.size();i++){
 			for(int j = 0;j<players.size();j++){
 				players.get(i).getOut().writeObject(players.get(j).getDirection());
 				System.out.println(players.get(i)+" sending to "+players.get(j));
 			}
 		}
-
-
-//		Map<Socket,Character> socketDirectionMap = new HashMap<>();
-//		for (Player player : players){
-//			socketDirectionMap.put(player.getHandlerPlayerSocket(),player.getDirection());
-//		}
-
-//		MovementServ movementServ = new MovementServ(socketDirectionMap);
-
-//		for (var entry : playersOut.entrySet()){
-//			entry.getValue().writeObject(movementServ);
-//		}
-
 	}
 
 
@@ -275,10 +221,6 @@ public class GamePanel extends JPanel implements ActionListener{
 			System.out.println(players.get(i).getName());
 			players.get(i).setDirection((Character) players.get(i).getIn().readObject());
 		}
-
-//		for (var entry : playersIn.entrySet()){
-//			entry.getKey().setDirection((Character) entry.getValue().readObject());
-//		}
 
 		for (int j=0; j<players.size();j++) {
 			int prevX = players.get(j).x[0];
@@ -346,6 +288,7 @@ public class GamePanel extends JPanel implements ActionListener{
 
 
 	public void checkApple() throws IOException {
+
 		boolean appleEaten = false;
 		for (int i=0;i<players.size();i++) {
 
@@ -354,8 +297,8 @@ public class GamePanel extends JPanel implements ActionListener{
 					appleEaten = true;
 					players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
 					players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
+					playersScore.put(i+1, playersScore.getOrDefault(i+1, 0) + 1);
 				}
-
 
 			players.get(i).getOut().writeObject(appleX);
 			players.get(i).getOut().writeObject(appleY);
@@ -370,20 +313,9 @@ public class GamePanel extends JPanel implements ActionListener{
 
 	}
 
+	public void checkCollisions() throws IOException {
 
 
-
-//		Map<Socket, List<Integer>> playerStats = new HashMap<>();
-//
-//		for(Player player : players){
-//			playerStats.put(player.getHandlerPlayerSocket(),Arrays.asList(player.getApplesEaten(),player.getBodyParts()));
-//		}
-//		for(var entry : playersOut.entrySet()){
-//			entry.getValue().writeObject(new Stats(playerStats));
-//		}
-	public void checkCollisions() {
-
-		List<Player> playersToRemove = new ArrayList<>();
 
 		// Add collisions between players
 		for (Player player : players) {
@@ -395,7 +327,6 @@ public class GamePanel extends JPanel implements ActionListener{
 					playersToRemove.add(player);
 				}
 			}
-
 			//Check if head touches obstacle
 			Rectangle snakeHead = new Rectangle(player.x[0], player.y[0], UNIT_SIZE, UNIT_SIZE);
 
@@ -405,7 +336,6 @@ public class GamePanel extends JPanel implements ActionListener{
 					playersToRemove.add(player);
 				}
 			}
-
 			// Check if head collides with other players
 			for (Player otherPlayer : players) {
 				if (otherPlayer != player) {
@@ -431,7 +361,6 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		// Send to Dead players signal to die
 
-		players.removeAll(playersToRemove);
 
 		boolean stillRunning = false;
 		for (Player player : players) {
@@ -445,6 +374,23 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 	}
 
+	private void playersDead() throws IOException {
+//		for(Player player: players){
+//			player.getOut().writeObject(playersToRemove.size());
+//		}
+		System.out.println("playersDead playersToRemove"+playersToRemove);
+		System.out.println("playersDead players"+players);
+		for(Player player : players){
+			if(playersToRemove.stream().map(Player::getId).toList().contains(player.getId())){
+				player.getOut().writeObject(true);
+			}else{
+				player.getOut().writeObject(false);
+			}
+		}
+		players.removeAll(playersToRemove);
+		playersToRemove.clear();
+	}
+
 	private void playersAlive() throws IOException {
 
 		for (Player player : players){
@@ -456,6 +402,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				player.getOut().writeObject(player1.getId());
 			}
 		}
+		System.out.println(players);
 	}
 
 
@@ -463,16 +410,13 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		obstacles.clear();
 		repaint();
+
 		//BestScore
-		int bestScore = players.get(0).getApplesEaten();
-		String name = players.get(0).getName();
-		for (int i = 0; i<players.size();i++){
-			if (players.get(i).getApplesEaten() > bestScore)
-			{
-				bestScore = players.get(i).getApplesEaten();
-				name = players.get(i).getName();
-			}
-		}
+		Map.Entry<Integer, Integer> maxEntry = playersScore.entrySet().stream().max(Map.Entry.comparingByValue()).orElse(null);
+		assert maxEntry != null;
+		int playerId = maxEntry.getKey();
+		int bestScore = maxEntry.getValue();
+		String name = playersNames.get(playerId);
 
 		g.setColor(Color.WHITE);
 
@@ -481,7 +425,7 @@ public class GamePanel extends JPanel implements ActionListener{
 		FontMetrics metrics1 = getFontMetrics(g.getFont());
 
 		g.drawString("Best Score: "+bestScore, (SCREEN_WIDTH - metrics1.stringWidth("Best Score: "+bestScore))/2, g.getFont().getSize());
-		g.drawString("by: "+name, (SCREEN_WIDTH - metrics1.stringWidth("by: "+name))/2, UNIT_SIZE);
+		g.drawString("by: "+name, (SCREEN_WIDTH - metrics1.stringWidth("by: "+name))/2, g.getFont().getSize()+2*UNIT_SIZE);
 
 		//Game Over text
 
@@ -510,26 +454,19 @@ public class GamePanel extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(running) {
 			try {
-
-				System.out.println("before anything action related ");
 				receiveMove();
 				sendMove();
 				checkApple();
 				checkCollisions();
+				playersDead();
 				playersAlive();
 
 			} catch (IOException | ClassNotFoundException ex) {
 				throw new RuntimeException(ex);
 			}
-
-
 		}
 		repaint();
 	}
-
-
-
-
 	public void placeObstacle() {
 		// Add obstacles for the current level
 		if (level == 1) {

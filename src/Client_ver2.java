@@ -6,17 +6,31 @@ import java.util.Vector;
 
 public class Client_ver2 {
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
-        String host = "localhost";
-        int port = 4444;
+        String host;
+        int port;
+        String playerName;
+        ClientMainMenu clientMainMenu = new ClientMainMenu();
+
+        clientMainMenu.setVisible(true);
+
+        synchronized (clientMainMenu.getLock()) {
+            clientMainMenu.getLock().wait();
+        }
+        String[] connectionDetails = clientMainMenu.getConnectionDetails();
+        host = connectionDetails[1];
+        port = Integer.parseInt(connectionDetails[2]);
+        playerName = connectionDetails[0];
+        clientMainMenu.setVisible(false);
+
         Socket socket = new Socket(host, port);
         ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
         ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
         System.out.println("Connected to " + host + " on port " + port);
         Vector<Player> players = new Vector<>();
 
-        out.writeObject(new Request("Taha"));
+        out.writeObject(new Request(playerName));
 
         ImmediateResponse immediateResponse = (ImmediateResponse) in.readObject();
         System.out.println("Client here 1");
@@ -35,9 +49,9 @@ public class Client_ver2 {
             System.out.println("Client here 4");
 
             System.out.println("client here");
-            new GameFramePlayer(players,my_id,in,out);
+            new GameFramePlayer(players, my_id, in, out);
 
-        }else {
+        } else {
             System.out.println("I was not admitted");
         }
 

@@ -56,7 +56,6 @@ public class Server_ver2 {
 
             }
         }
-        System.out.println(playersServerSided);
         new GameFrame(playersServerSided);
     }
 }

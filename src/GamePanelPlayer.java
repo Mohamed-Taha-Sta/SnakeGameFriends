@@ -69,7 +69,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 				}
 			}
 			players.get(i).setApplesEaten(0);
-			players.get(i).setBodyParts(4);
+			players.get(i).setBodyParts(6);
 			players.get(i).setRunning(true);
 		}
 	}
@@ -105,10 +105,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 		this.addKeyListener(new MyKeyAdapter());
 
-
 		startGame();
-
-
 	}
 
 	public void startGame() throws IOException, ClassNotFoundException {
@@ -159,16 +156,15 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			g.setColor(new Color(217,84,60));
 			g.fillOval(appleX, appleY, UNIT_SIZE, UNIT_SIZE);
 
-
 			// Calculate color interpolation for the gradient
 			for (Player player : players) {
 				for (int i = 0; i < player.getBodyParts(); i++) {
+					System.out.println(i);
 					double ratio = (double) i / (double) (player.getBodyParts() - 1);
 					int red = (int) (player.getStartColor().getRed() + ratio * (player.getEndColor().getRed() - player.getStartColor().getRed()));
 					int green = (int) (player.getStartColor().getGreen() + ratio * (player.getEndColor().getGreen() - player.getStartColor().getGreen()));
 					int blue = (int) (player.getStartColor().getBlue() + ratio * (player.getEndColor().getBlue() - player.getStartColor().getBlue()));
 					Color gradientColor = new Color(red, green, blue);
-
 					g.setColor(gradientColor);
 					g.fillRect(player.x[i], player.y[i], UNIT_SIZE, UNIT_SIZE);
 				}
@@ -435,65 +431,6 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 
 		}
 
-	}
-
-	public void placeObstacle() {
-		// Add obstacles for the current level
-		if (level == 1) {
-			obstacles.add(new Rectangle(100, 260, 100, 20));
-			obstacles.add(new Rectangle(300, 260, 100, 20));
-			obstacles.add(new Rectangle(500, 260, 100, 20));
-			obstacles.add(new Rectangle(200, 140, 100, 20));
-			obstacles.add(new Rectangle(400, 140, 100, 20));
-			obstacles.add(new Rectangle(300, 40, 100, 20));
-			obstacles.add(new Rectangle(100, 340, 40, 20));
-			obstacles.add(new Rectangle(500, 340, 40, 20));
-			obstacles.add(new Rectangle(260, 40, 20, 20));
-			obstacles.add(new Rectangle(460, 20, 20, 20));
-			obstacles.add(new Rectangle(100, 620, 100, 20));
-			obstacles.add(new Rectangle(300, 620, 100, 20));
-			obstacles.add(new Rectangle(500, 680, 100, 20));
-			obstacles.add(new Rectangle(200, 580, 100, 20));
-			obstacles.add(new Rectangle(400, 560, 100, 20));
-			obstacles.add(new Rectangle(300, 460, 100, 20));
-			obstacles.add(new Rectangle(100, 760, 20, 20));
-			obstacles.add(new Rectangle(500, 780, 20, 120));
-			obstacles.add(new Rectangle(260, 480, 20, 20));
-			obstacles.add(new Rectangle(460, 480, 20, 20));
-			obstacles.add(new Rectangle(600, 260, 100, 20));
-			obstacles.add(new Rectangle(900, 260, 100, 20));
-			obstacles.add(new Rectangle(1000, 260, 100, 20));
-			obstacles.add(new Rectangle(800, 140, 100, 20));
-			obstacles.add(new Rectangle(800, 140, 100, 120));
-			obstacles.add(new Rectangle(600, 40, 100, 20));
-			obstacles.add(new Rectangle(700, 340, 40, 20));
-			obstacles.add(new Rectangle(1000, 340, 40, 20));
-			obstacles.add(new Rectangle(560, 40, 20, 20));
-			obstacles.add(new Rectangle(760, 20, 20, 20));
-			obstacles.add(new Rectangle(1000, 620, 100, 20));
-			obstacles.add(new Rectangle(700, 620, 100, 20));
-			obstacles.add(new Rectangle(1000, 680, 100, 20));
-			obstacles.add(new Rectangle(700, 580, 100, 20));
-			obstacles.add(new Rectangle(600, 560, 100, 20));
-			obstacles.add(new Rectangle(1000, 460, 20, 80));
-			obstacles.add(new Rectangle(800, 760, 20, 20));
-			obstacles.add(new Rectangle(600, 780, 20, 20));
-			obstacles.add(new Rectangle(760, 480, 20, 80));
-			obstacles.add(new Rectangle(960, 480, 20, 60));
-
-
-		} else if (level == 2) {
-			obstacles.add(new Rectangle(100, 100, 50, 50));
-			obstacles.add(new Rectangle(200, 200, 50, 50));
-		} else if (level == 3) {
-			obstacles.add(new Rectangle(100, 100, 50, 50));
-			obstacles.add(new Rectangle(200, 200, 50, 50));
-			obstacles.add(new Rectangle(300, 300, 50, 50));
-		} else if (level == 4) {
-			// Add more obstacles for level 4
-		} else if (level == 5) {
-			// Add even more obstacles for level 5
-		}
 	}
 
 }

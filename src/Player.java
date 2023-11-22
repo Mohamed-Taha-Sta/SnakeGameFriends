@@ -8,8 +8,8 @@ public class Player implements Serializable {
 
     int[] x = new int[GamePanel.GAME_UNITS];
     int[] y = new int[GamePanel.GAME_UNITS];
-    private int bodyParts = 6;
-    private int applesEaten = 0;
+    private int bodyParts;
+    private int applesEaten;
     private char direction = 'R';
     private boolean running = false;
     private boolean ready = false;

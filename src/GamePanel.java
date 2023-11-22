@@ -3,6 +3,8 @@ import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.*;
 
@@ -51,7 +53,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				}
 			}
 			players.get(i).setApplesEaten(0);
-			players.get(i).setBodyParts(4);
+			players.get(i).setBodyParts(6);
 			players.get(i).setRunning(true);
 		}
 	}
@@ -74,6 +76,8 @@ public class GamePanel extends JPanel implements ActionListener{
 		this.setPreferredSize(new Dimension(SCREEN_WIDTH,SCREEN_HEIGHT));
 
 		this.setFocusable(true);
+
+		this.addKeyListener(new MyKeyAdapter());
 
 		startGame();
 	}
@@ -129,7 +133,7 @@ public class GamePanel extends JPanel implements ActionListener{
 			// Calculate color interpolation for the gradient
 			for (Player player : players) {
 				for (int i = 0; i < player.getBodyParts(); i++) {
-					double ratio = (double) i / (double) (player.getBodyParts() - 1);
+					double ratio = (double) i / (double) player.getBodyParts();
 					int red = (int) (player.getStartColor().getRed() + ratio * (player.getEndColor().getRed() - player.getStartColor().getRed()));
 					int green = (int) (player.getStartColor().getGreen() + ratio * (player.getEndColor().getGreen() - player.getStartColor().getGreen()));
 					int blue = (int) (player.getStartColor().getBlue() + ratio * (player.getEndColor().getBlue() - player.getStartColor().getBlue()));
@@ -139,6 +143,7 @@ public class GamePanel extends JPanel implements ActionListener{
 					g.fillRect(player.x[i], player.y[i], UNIT_SIZE, UNIT_SIZE);
 				}
 			}
+
 
 			Color semiTransparentColor = new Color(173, 173, 173, 115);
 			g.setColor(semiTransparentColor);
@@ -276,7 +281,11 @@ public class GamePanel extends JPanel implements ActionListener{
 				if ((players.get(i).x[0] == appleX) && (players.get(i).y[0] == appleY)) {
 					newApple();
 					appleEaten = true;
-					players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
+					if (players.get(i).getBodyParts()%2 == 1){
+						players.get(i).setBodyParts(players.get(i).getBodyParts()+1);
+					}else {
+						players.get(i).setBodyParts(players.get(i).getBodyParts()+2);
+					}
 					players.get(i).setApplesEaten(players.get(i).getApplesEaten()+1);
 					playersScore.put(players.get(i).getId(), playersScore.getOrDefault(players.get(i).getId(), 0) + 1);
 				}
@@ -412,12 +421,9 @@ public class GamePanel extends JPanel implements ActionListener{
 		g.setFont( new Font("Roboto",Font.PLAIN, 20));
 		FontMetrics metrics4 = getFontMetrics(g.getFont());
 		g.drawString("Press 'ESC' to Quit", (SCREEN_WIDTH - metrics4.stringWidth("Press 'ESC' to Quit"))/2, SCREEN_HEIGHT/2+4*UNIT_SIZE);
-
-
 	}
 
 	@Override
-
 	public void actionPerformed(ActionEvent e) {
 		if(running) {
 			try {
@@ -433,6 +439,28 @@ public class GamePanel extends JPanel implements ActionListener{
 		}
 		repaint();
 	}
+
+
+	public class MyKeyAdapter extends KeyAdapter {
+
+		@Override
+
+		public void keyPressed(KeyEvent e) {
+
+			switch(e.getKeyCode()) {
+				case KeyEvent.VK_ESCAPE:
+					if (!running) {
+						System.exit(0);
+					}
+					break;
+			}
+
+
+
+		}
+
+	}
+
 
 	public void placeObstacle() {
 		Random rand = new Random();

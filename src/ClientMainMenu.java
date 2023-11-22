@@ -26,6 +26,12 @@ public class ClientMainMenu extends JFrame {
         getContentPane().setBackground(new Color(46, 48, 48)); // Set the background color of the window
         setLayout(new CardLayout());
 
+        this.setTitle("Snake Game");
+
+        ImageIcon img = new ImageIcon("assets/SnakeLogo.png");
+
+        this.setIconImage(img.getImage());
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setOpaque(false); // Make the panel transparent
@@ -92,7 +98,11 @@ public class ClientMainMenu extends JFrame {
                 // Handle play button click
                 String name = nameField.getText();
                 String ipAddress = ipField.getText();
-                int port = Integer.parseInt(portField.getText());
+                int port = 4444;
+                try {
+                    port = Integer.parseInt(portField.getText());
+                }catch (Exception ex){
+                }
                 // Use these values to connect to the server
                 synchronized (lock) {
                     lock.notify();

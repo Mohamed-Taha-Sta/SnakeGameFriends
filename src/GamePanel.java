@@ -51,7 +51,7 @@ public class GamePanel extends JPanel implements ActionListener{
 				}
 			}
 			players.get(i).setApplesEaten(0);
-			players.get(i).setBodyParts(6);
+			players.get(i).setBodyParts(4);
 			players.get(i).setRunning(true);
 		}
 	}
@@ -82,19 +82,16 @@ public class GamePanel extends JPanel implements ActionListener{
 
 		init_players();
 
+		for (int i = 0; i < numObstacles; i++) {
+			placeObstacle();
+		}
+
 		newApple();
 
 		for (int i=0; i<players.size();i++){
 			players.get(i).getOut().writeObject(appleX);
 			players.get(i).getOut().writeObject(appleY);
 		}
-
-
-		for (int i = 0; i < numObstacles; i++) {
-			placeObstacle();
-		}
-
-
 
 		for (Player player : players) {
 			player.getOut().writeObject(obstacles.size());
@@ -430,7 +427,6 @@ public class GamePanel extends JPanel implements ActionListener{
 				checkCollisions();
 				playersDead();
 				playersAlive();
-
 			} catch (IOException | ClassNotFoundException ex) {
 				throw new RuntimeException(ex);
 			}

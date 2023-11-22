@@ -282,6 +282,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 	public void checkApple() throws IOException, ClassNotFoundException {
 
 		newApple();
+
 		for(int i = 0; i < players.size(); i++){
 			int oldApplesEaten = players.get(i).getApplesEaten();
 			int oldBodyParts = players.get(i).getBodyParts();
@@ -289,7 +290,7 @@ public class GamePanelPlayer extends JPanel implements ActionListener{
 			players.get(i).setApplesEaten((Integer) in.readObject());
 			players.get(i).setBodyParts((Integer) in.readObject());
 
-			if (players.get(i).getApplesEaten() != oldApplesEaten || players.get(i).getBodyParts() != oldBodyParts) {
+			if (players.get(i).getApplesEaten() > oldApplesEaten || players.get(i).getBodyParts() > oldBodyParts) {
 				playersScore.put(players.get(i).getId(), playersScore.getOrDefault(players.get(i).getId(), 0) + 1);
 			}
 		}

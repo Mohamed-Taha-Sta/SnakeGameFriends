@@ -13,14 +13,13 @@ public class Server_ver2 {
         Vector<Player> playersPlayerSided = new Vector<>();
         boolean launchGame = false;
         System.out.println("Snake Server Online");
-        int playerNumber = 1;
+        int playerNumber = 2;
         int i = 0;
         while(true) {
             // Check if all the players are ready, if so begin match,
 //            if (players.stream().filter(Player::isReady).toList().size()<players.size()){
 
             if (playersServerSided.size() == playerNumber){
-                System.out.println("Server here");
                 launchGame = true;
                 break;
             }else{
